@@ -72,16 +72,25 @@
         }
     });
 
-    // Gawing global ang functions para ma-call ng buttons
-    window.addBirthday = async function() {
-        const name = document.getElementById('nameInput').value;
-        const date = document.getElementById('dateInput').value;
-        if (name && date) {
-            await addDoc(collection(db, "birthdays"), { name, date });
-            document.getElementById('nameInput').value = '';
-            document.getElementById('dateInput').value = '';
+   // Add birthday to Firebase with Password
+        async function addBirthday() {
+            const pass = prompt("Admin Password para mag-add:");
+            if (pass !== "1234") { // PALITAN MO ITONG 1234 NG GUSTO MONG PASSWORD
+                alert("Maling password!");
+                return;
+            }
+
+            const name = document.getElementById('nameInput').value;
+            const date = document.getElementById('dateInput').value;
+
+            if (name && date) {
+                await addDoc(collection(window.db, "birthdays"), { name, date });
+                loadBirthdays();
+                document.getElementById('nameInput').value = '';
+                document.getElementById('dateInput').value = '';
+                triggerConfetti();
+            }
         }
-    };
 
     window.deleteBirthday = async function(id) {
         if (confirm("Sigurado ka bang buburahin ito?")) {
@@ -461,14 +470,19 @@
             }
         }
 
-        // Delete birthday
+        // Delete birthday with Password
         async function deleteBirthday(id) {
+            const pass = prompt("Admin Password para mag-delete:");
+            if (pass !== "1234") { // DAPAT PAREHO ITONG PASSWORD SA ITAAS
+                alert("Bawal mag-delete!");
+                return;
+            }
+
             if (confirm("Sigurado ka bang buburahin ang entry na ito?")) {
                 await deleteDoc(doc(window.db, "birthdays", id));
                 loadBirthdays();
             }
         }
-
         // Trigger confetti
         function triggerConfetti() {
             confetti({
