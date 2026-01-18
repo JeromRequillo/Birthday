@@ -16,7 +16,7 @@
     <!-- Firebase SDK for online storage -->
    <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCRl2LQBqPUc7uCqJp6sSwPSF6o-9dKb9w", 
@@ -30,17 +30,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-       // ILAGAY ITO SA LINE 32 (sa ilalim ng db definition)
-const hours = new Date().getHours();
-const subtitleElement = document.getElementById('hero-subtitle');
-
-if (hours < 12) {
-    subtitleElement.innerText = "☕ Magandang umaga! Silipin ang mga celebrants ngayong araw.";
-} else if (hours < 18) {
-    subtitleElement.innerText = "🌤️ Happy Afternoon! Keep track of your favorite people.";
-} else {
-    subtitleElement.innerText = "🌙 Malapit na ang birthday ni... Silipin ang listahan!";
-}
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
    onSnapshot(collection(db, "birthdays"), (snapshot) => {
@@ -67,6 +56,7 @@ if (hours < 12) {
                 div.innerHTML = `
                     <span>🎂 <strong>${b.name}</strong> ${isToday ? '<strong>Today! 🎉</strong>' : ''}</span>
                     <span>${monthNames[bMonth]} ${bDay}</span>
+                    <button class="edit-btn" onclick="editBirthday('${docSnap.id}', '${b.name}', '${b.date}')">Edit</button>
                     <button class="delete-btn" onclick="deleteBirthday('${docSnap.id}')">Delete</button>
                 `;
                 listElement.appendChild(div);
@@ -98,6 +88,19 @@ if (hours < 12) {
                 await addDoc(collection(db, "birthdays"), { name, date });
                 document.getElementById('nameInput').value = '';
                 document.getElementById('dateInput').value = '';
+                // Celebrate adding a birthday
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ff6b9d', '#4a90e2', '#ffd700'] });
+            }
+        } else { alert("Maling Password!"); }
+    };
+
+    window.editBirthday = async function(id, currentName, currentDate) {
+        const pass = prompt("Enter Admin Password to edit:");
+        if (pass === "1234") {
+            const newName = prompt("Enter new name:", currentName);
+            const newDate = prompt("Enter new date (YYYY-MM-DD):", currentDate);
+            if (newName && newDate) {
+                await updateDoc(doc(db, "birthdays", id), { name: newName, date: newDate });
             }
         } else { alert("Maling Password!"); }
     };
@@ -394,103 +397,17 @@ if (hours < 12) {
     </div>
     
     <script>
-        // Load birthdays from Firebase
-        async function loadBirthdays() {
-            const querySnapshot = await getDocs(collection(window.db, "birthdays"));
-            birthdays = [];
-            querySnapshot.forEach((doc) => {
-                birthdays.push({ id: doc.id, ...doc.data() });
-            });
-            displayBirthdays();
+        // Update subtitle based on time of day
+        const hours = new Date().getHours();
+        const subtitleElement = document.getElementById('hero-subtitle');
+
+        if (hours < 12) {
+            subtitleElement.innerText = "☕ Magandang umaga! Silipin ang mga celebrants ngayong araw.";
+        } else if (hours < 18) {
+            subtitleElement.innerText = "🌤️ Happy Afternoon! Keep track of your favorite people.";
+        } else {
+            subtitleElement.innerText = "🌙 Malapit na ang birthday ni... Silipin ang listahan!";
         }
-
-        // Display birthdays
-        function displayBirthdays() {
-            const listElement = document.getElementById('birthday-list');
-            const monthText = document.getElementById('current-month-text');
-            listElement.innerHTML = '';
-            
-            monthText.innerText = `Happy Birthday sa mga meron ngayong ${monthNames[currentMonth]}!`;
-
-            // Filter birthdays for current month only
-            const thisMonthBirthdays = birthdays.filter(b => {
-                const bMonth = new Date(b.date).getMonth();
-                return bMonth === currentMonth;
-            });
-
-            if (thisMonthBirthdays.length === 0) {
-                listElement.innerHTML = "<p>Walang birthday ngayong buwan.</p>";
-            }
-
-            thisMonthBirthdays.forEach(b => {
-                const bDate = new Date(b.date);
-                const isToday = `${(bDate.getMonth()+1).toString().padStart(2, '0')}-${bDate.getDate().toString().padStart(2, '0')}` === todayStr;
-
-                const div = document.createElement('div');
-                div.className = `birthday-item ${isToday ? 'today' : ''}`;
-                div.innerHTML = `
-                    <span>🎂 ${b.name} ${isToday ? '<strong>Today! 🎉</strong>' : ''}</span>
-                    <span>${monthNames[bDate.getMonth()]} ${bDate.getDate()}</span>
-                    <button class="edit-btn" onclick="editBirthday('${b.id}', '${b.name}', '${b.date}')">Edit</button>
-                    <button class="delete-btn" onclick="deleteBirthday('${b.id}')">Delete</button>
-                `;
-                listElement.appendChild(div);
-
-                if (isToday) {
-                    triggerConfetti();
-                }
-            });
-        }
-
-        // Add birthday to Firebase
-        async function addBirthday() {
-            const name = document.getElementById('nameInput').value;
-            const date = document.getElementById('dateInput').value;
-
-            if (name && date) {
-                await addDoc(collection(window.db, "birthdays"), { name, date });
-                loadBirthdays();
-                document.getElementById('nameInput').value = '';
-                document.getElementById('dateInput').value = '';
-                triggerConfetti(); // Celebrate adding a birthday
-            }
-        }
-
-        // Edit birthday
-        function editBirthday(id, currentName, currentDate) {
-            const newName = prompt("Enter new name:", currentName);
-            const newDate = prompt("Enter new date (YYYY-MM-DD):", currentDate);
-            if (newName && newDate) {
-                updateDoc(doc(window.db, "birthdays", id), { name: newName, date: newDate });
-                loadBirthdays();
-            }
-        }
-
-        // Delete birthday with Password
-        async function deleteBirthday(id) {
-            const pass = prompt("Admin Password para mag-delete:");
-            if (pass !== "1234") { // DAPAT PAREHO ITONG PASSWORD SA ITAAS
-                alert("Bawal mag-delete!");
-                return;
-            }
-
-            if (confirm("Sigurado ka bang buburahin ang entry na ito?")) {
-                await deleteDoc(doc(window.db, "birthdays", id));
-                loadBirthdays();
-            }
-        }
-        // Trigger confetti
-        function triggerConfetti() {
-            confetti({
-                particleCount: 150,
-                spread: 90,
-                origin: { y: 0.6 },
-                colors: ['#ff6b9d', '#4a90e2', '#ffd700']
-            });
-        }
-
-        // Initial load
-        loadBirthdays();
     </script>
     
     <div class="cloud-footer">
