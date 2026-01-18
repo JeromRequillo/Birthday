@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Tracker | Juan Dela Cruz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDK for online storage -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // Firebase configuration (replace with your own Firebase project config)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.db = db; // Make db available globally for the script
+    </script>
+    <style>
+        :root {
+            --sky-blue: #4a90e2;
+            --cloud-white: #f0f8ff;
+            --note-yellow: #fff9c4;
+            --accent-pink: #ff6b9d;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(to bottom, var(--sky-blue), #87ceeb);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Floating clouds animation */
+        .cloud {
+            position: absolute;
+            background: var(--cloud-white);
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: float 20s infinite linear;
+        }
+
+        .cloud:nth-child(1) { width: 100px; height: 60px; top: 10%; left: 10%; animation-delay: 0s; }
+        .cloud:nth-child(2) { width: 150px; height: 90px; top: 20%; right: 15%; animation-delay: 5s; }
+        .cloud:nth-child(3) { width: 80px; height: 50px; top: 60%; left: 20%; animation-delay: 10s; }
+
+        @keyframes float {
+            0% { transform: translateX(-100vw); }
+            100% { transform: translateX(100vw); }
+        }
+
+        /* Header Section */
+        header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .author-tag {
+            background: var(--note-yellow);
+            color: #333;
+            padding: 5px 15px;
+            transform: rotate(-5deg);
+            display: inline-block;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            font-weight: bold;
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            animation: wiggle 2s infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        h1 { 
+            font-family: 'Fredoka One', cursive; 
+            font-size: 2.5rem; 
+            margin-bottom: 5px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle { 
+            font-style: italic; 
+            margin-bottom: 20px; 
+            animation: fadeIn 2s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1000px;
+            width: 90%;
+            margin-bottom: 50px;
+            z-index: 1;
+        }
+
+        /* Sticky Note Style */
+        .sticky-note {
+            background: var(--note-yellow);
+            padding: 25px;
+            width: 300px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            transform: rotate(-2deg);
+            transition: transform 0.3s ease;
+        }
+
+        .sticky-note:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .sticky-note::before {
+            content: '📌';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Card Style */
+        .main-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            flex: 1;
+            min-width: 350px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            animation: slideUp 1s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .birthday-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .birthday-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .birthday-item.today {
+            background-color: #fff9c4;
+            border: 2px solid #ffd700;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .btn-github {
+            background: #24292e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-github:hover {
+            background: #444;
+        }
+
+        /* Input Form */
+        .add-form {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        input { 
+            padding: 8px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            flex: 1;
+            min-width: 150px;
+        }
+
+        button {
+            padding: 8px 15px;
+            background: var(--accent-pink);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #e55a8a;
+        }
+
+        .edit-btn, .delete-btn {
+            margin-left: 10px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .edit-btn { background: #4CAF50; }
+        .delete-btn { background: #f44336; }
+
+        .cloud-footer {
+            position: fixed;
+            bottom: 20px;
+            background: rgba(255,255,255,0.8);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; align-items: center; }
+            .sticky-note { width: 90%; }
+            .main-card { width: 90%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating clouds -->
+    <div class="cloud"></div>
+    <div class="cloud"></div>
+    <div class="cloud"></div>
+
+    <header>
+        <div class="author-tag">Made by<br>Juan Dela Cruz</div>
+        <h1>Birthday Tracker / Greeting Page</h1>
+        <p class="subtitle">Para hindi mo makalimutan ang birthday ng mga katrabaho mo o ng mga estudyante mo.</p>
+    </header>
+
+    <div class="container">
+        <div class="sticky-note">
+            <h3>⭐ Features:</h3>
+            <ul>
+                <li>Listahan ng mga may birthday ngayong buwan.</li>
+                <li><strong>Confetti Animation</strong> kapag may birthday ngayon!</li>
+                <li>Online save sa Firebase (hindi mawawala kahit sa ibang device).</li>
+                <li>Edit at Delete functionality para sa mga entries.</li>
+                <li>Animated UI para mas magandang experience.</li>
+            </ul>
+            <a href="https://github.com" class="btn-github">View Code on GitHub</a>
+        </div>
+
+        <div class="main-card">
+            <h2 id="month-title">Birthdays This Month 🥳</h2>
+            <p id="current-month-text"></p>
+            
+            <div id="birthday-list">
+                <!-- Birthdays will be loaded here -->
+            </div>
+
+            <hr>
+            <h4>Magdagdag ng Birthday:</h4>
+            <div class="add-form">
+                <input type="text" id="nameInput" placeholder="Pangalan">
+                <input type="date" id="dateInput">
+                <button onclick="addBirthday()">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cloud-footer">
+        ☁️ <strong>Saved Online!</strong> Hindi mo na kailangang i-type ulit ang listahan.
+    </div>
+
+    <script>
+        // Global variables
+        let birthdays = [];
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const todayStr = `${(now.getMonth()+1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+        // Load birthdays from Firebase
+        async function loadBirthdays() {
+            const querySnapshot = await getDocs(collection(window.db, "birthdays"));
+            birthdays = [];
+            querySnapshot.forEach((doc) => {
+                birthdays.push({ id: doc.id, ...doc.data() });
+            });
+            displayBirthdays();
+        }
+
+        // Display birthdays
+        function displayBirthdays() {
+            const listElement = document.getElementById('birthday-list');
+            const monthText = document.getElementById('current-month-text');
+            listElement.innerHTML = '';
+            
+            monthText.innerText = `Happy Birthday sa mga meron ngayong ${monthNames[currentMonth]}!`;
+
+            // Filter birthdays for current month only
+            const thisMonthBirthdays = birthdays.filter(b => {
+                const bMonth = new Date(b.date).getMonth();
+                return bMonth === currentMonth;
+            });
+
+            if (thisMonthBirthdays.length === 0) {
+                listElement.innerHTML = "<p>Walang birthday ngayong buwan.</p>";
+            }
+
+            thisMonthBirthdays.forEach(b => {
+                const bDate = new Date(b.date);
+                const isToday = `${(bDate.getMonth()+1).toString().padStart(2, '0')}-${bDate.getDate().toString().padStart(2, '0')}` === todayStr;
+
+                const div = document.createElement('div');
+                div.className = `birthday-item ${isToday ? 'today' : ''}`;
+                div.innerHTML = `
+                    <span>🎂 ${b.name} ${isToday ? '<strong>Today! 🎉</strong>' : ''}</span>
+                    <span>${monthNames[bDate.getMonth()]} ${bDate.getDate()}</span>
+                    <button class="edit-btn" onclick="editBirthday('${b.id}', '${b.name}', '${b.date}')">Edit</button>
+                    <button class="delete-btn" onclick="deleteBirthday('${b.id}')">Delete</button>
+                `;
+                listElement.appendChild(div);
+
+                if (isToday) {
+                    triggerConfetti();
+                }
+            });
+        }
+
+        // Add birthday to Firebase
+        async function addBirthday() {
+            const name = document.getElementById('nameInput').value;
+            const date = document.getElementById('dateInput').value;
+
+            if (name && date) {
+                await addDoc(collection(window.db, "birthdays"), { name, date });
+                loadBirthdays();
+                document.getElementById('nameInput').value = '';
+                document.getElementById('dateInput').value = '';
+                triggerConfetti(); // Celebrate adding a birthday
+            }
+        }
+
+        // Edit birthday
+        function editBirthday(id, currentName, currentDate) {
+            const newName = prompt("Enter new name:", currentName);
+            const newDate = prompt("Enter new date (YYYY-MM-DD):", currentDate);
+            if (newName && newDate) {
+                updateDoc(doc(window.db, "birthdays", id), { name: newName, date: newDate });
+                loadBirthdays();
+            }
+        }
+
+        // Delete birthday
+        async function deleteBirthday(id) {
+            if (confirm("Sigurado ka bang buburahin ang entry na ito?")) {
+                await deleteDoc(doc(window.db, "birthdays", id));
+                loadBirthdays();
+            }
+        }
+
+        // Trigger confetti
+        function triggerConfetti() {
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { y: 0.6 },
+                colors: ['#ff6b9d', '#4a90e2', '#ffd700']
+            });
+        }
+
+        // Initial load
+        loadBirthdays();
+    </script>
+</body>
+</html>
