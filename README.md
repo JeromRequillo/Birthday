@@ -95,5 +95,3 @@ This project is open-source. Feel free to fork, modify, and use it for your own 
 *“Where every special day is remembered and celebrated.”*
 
 ---
-
-### Would you like me to also generate the content for your `manifest.json` file to make sure the PWA (installable app) feature works correctly?
