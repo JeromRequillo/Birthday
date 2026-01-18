@@ -8,13 +8,11 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Firebase SDK for online storage -->
    <script type="module">
-    // 1. Dito natin tinatawag ang mga kailangang commands (IMPORT)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    // 2. Ang iyong Firebase Config
     const firebaseConfig = {
-        apiKey: "AIzaSyC...", // Siguraduhin na ito yung sa screen mo
+        apiKey: "AIzaSyC...", // Gamitin ang iyong actual key dito
         authDomain: "birthday-tracker-dff7f.firebaseapp.com",
         projectId: "birthday-tracker-dff7f",
         storageBucket: "birthday-tracker-dff7f.firebasestorage.app",
@@ -23,36 +21,79 @@
         measurementId: "G-7TPQ3R4JTP"
     };
 
-    // 3. Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 4. GAWIN ITONG "WINDOW" PARA GUMANA SA ONCLICK BUTTON
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+    // REAL-TIME LISTENER (Mas maganda kaysa loadBirthdays)
+    onSnapshot(collection(db, "birthdays"), (snapshot) => {
+        const listElement = document.getElementById('birthday-list');
+        const monthText = document.getElementById('current-month-text');
+        listElement.innerHTML = '';
+        
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentDay = now.getDate();
+
+        monthText.innerText = `Happy Birthday sa mga meron ngayong ${monthNames[currentMonth]}!`;
+
+        let counter = 0;
+        snapshot.forEach((docSnap) => {
+            const b = docSnap.data();
+            const bId = docSnap.id;
+            
+            // Hatiin ang date string (YYYY-MM-DD)
+            const dateParts = b.date.split('-');
+            const bMonth = parseInt(dateParts[1]) - 1;
+            const bDay = parseInt(dateParts[2]);
+
+            if (bMonth === currentMonth) {
+                counter++;
+                const isToday = (bDay === currentDay);
+                
+                const div = document.createElement('div');
+                div.className = `birthday-item ${isToday ? 'today' : ''}`;
+                div.innerHTML = `
+                    <span>🎂 <strong>${b.name}</strong> ${isToday ? '<strong>Today! 🎉</strong>' : ''}</span>
+                    <span>${monthNames[bMonth]} ${bDay}</span>
+                    <div>
+                        <button class="delete-btn" onclick="deleteBirthday('${bId}')">Delete</button>
+                    </div>
+                `;
+                listElement.appendChild(div);
+
+                if (isToday) triggerConfetti();
+            }
+        });
+
+        if (counter === 0) {
+            listElement.innerHTML = "<p>Walang birthday ngayong buwan.</p>";
+        }
+    });
+
+    // Gawing global ang functions para ma-call ng buttons
     window.addBirthday = async function() {
         const name = document.getElementById('nameInput').value;
         const date = document.getElementById('dateInput').value;
-
         if (name && date) {
-            try {
-                // Tinatawag na natin ang addDoc dito
-                await addDoc(collection(db, "birthdays"), { 
-                    name: name, 
-                    date: date 
-                });
-                alert("Success! Saved na sa Firebase.");
-                
-                // Clear inputs
-                document.getElementById('nameInput').value = '';
-                document.getElementById('dateInput').value = '';
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                alert("Mali: " + e.message);
-            }
-        } else {
-            alert("Paki-fill up ang name at date!");
+            await addDoc(collection(db, "birthdays"), { name, date });
+            document.getElementById('nameInput').value = '';
+            document.getElementById('dateInput').value = '';
         }
     };
+
+    window.deleteBirthday = async function(id) {
+        if (confirm("Sigurado ka bang buburahin ito?")) {
+            await deleteDoc(doc(db, "birthdays", id));
+        }
+    };
+
+    function triggerConfetti() {
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+    }
 </script>
+    
     <style>
         :root {
             --sky-blue: #4a90e2;
