@@ -1,7 +1,3 @@
-Here is a professional and detailed **README.md** file written in English, specifically tailored for your GitHub repository.
-
----
-
 # 🎂 Birthday Tracker & Greeting Page
 
 A vibrant, interactive, and real-time web application designed to track and celebrate birthdays for family and friends. This project features a clean "Sticky Note" aesthetic, dynamic animations, and cloud-themed backgrounds, all powered by a live database.
