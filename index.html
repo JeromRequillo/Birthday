@@ -492,5 +492,46 @@ if (hours < 12) {
         // Initial load
         loadBirthdays();
     </script>
+       // Edit birthday
+        function editBirthday(id, currentName, currentDate) {
+            const newName = prompt("Enter new name:", currentName);
+            const newDate = prompt("Enter new date (YYYY-MM-DD):", currentDate);
+            if (newName && newDate) {
+                updateDoc(doc(window.db, "birthdays", id), { name: newName, date: newDate });
+                loadBirthdays();
+            }
+        }
+
+        // Delete birthday with Password
+        async function deleteBirthday(id) {
+            const pass = prompt("Admin Password para mag-delete:");
+            if (pass !== "1234") { // DAPAT PAREHO ITONG PASSWORD SA ITAAS
+                alert("Bawal mag-delete!");
+                return;
+            }
+
+            if (confirm("Sigurado ka bang buburahin ang entry na ito?")) {
+                await deleteDoc(doc(window.db, "birthdays", id));
+                loadBirthdays();
+            }
+        }
+        // Trigger confetti
+        function triggerConfetti() {
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { y: 0.6 },
+                colors: ['#ff6b9d', '#4a90e2', '#ffd700']
+            });
+        }
+
+        // Initial load
+        loadBirthdays();
+    </script> 
+
+    <div class="cloud-footer">
+        ✨ <strong>Always Synced!</strong> Awtomatikong naka-save ang iyong listahan sa cloud.
+    </div>
+
 </body>
 </html>
