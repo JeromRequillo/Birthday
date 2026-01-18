@@ -7,26 +7,52 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Firebase SDK for online storage -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+   <script type="module">
+    // 1. Dito natin tinatawag ang mga kailangang commands (IMPORT)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // Firebase configuration (replace with your own Firebase project config)
-        const firebaseConfig = {
-  apiKey: "AIzaSyCRl2LQBqPUc7uCqJp6sSwPSF6o-9dKb9w",
-  authDomain: "birthday-tracker-dff7f.firebaseapp.com",
-  projectId: "birthday-tracker-dff7f",
-  storageBucket: "birthday-tracker-dff7f.firebasestorage.app",
-  messagingSenderId: "796866393410",
-  appId: "1:796866393410:web:c548cf89c5df9cb9ef04db",
-  measurementId: "G-7TPQ3R4JTP"
-};
-        };
+    // 2. Ang iyong Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyC...", // Siguraduhin na ito yung sa screen mo
+        authDomain: "birthday-tracker-dff7f.firebaseapp.com",
+        projectId: "birthday-tracker-dff7f",
+        storageBucket: "birthday-tracker-dff7f.firebasestorage.app",
+        messagingSenderId: "796866393410",
+        appId: "1:796866393410:web:c548cf89c5df9cb9ef04db",
+        measurementId: "G-7TPQ3R4JTP"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.db = db; // Make db available globally for the script
-    </script>
+    // 3. Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 4. GAWIN ITONG "WINDOW" PARA GUMANA SA ONCLICK BUTTON
+    window.addBirthday = async function() {
+        const name = document.getElementById('nameInput').value;
+        const date = document.getElementById('dateInput').value;
+
+        if (name && date) {
+            try {
+                // Tinatawag na natin ang addDoc dito
+                await addDoc(collection(db, "birthdays"), { 
+                    name: name, 
+                    date: date 
+                });
+                alert("Success! Saved na sa Firebase.");
+                
+                // Clear inputs
+                document.getElementById('nameInput').value = '';
+                document.getElementById('dateInput').value = '';
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                alert("Mali: " + e.message);
+            }
+        } else {
+            alert("Paki-fill up ang name at date!");
+        }
+    };
+</script>
     <style>
         :root {
             --sky-blue: #4a90e2;
