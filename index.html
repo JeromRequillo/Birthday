@@ -32,6 +32,18 @@
     const db = getFirestore(app);
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+    // Function to calculate age
+    function calculateAge(birthDate) {
+        const today = new Date();
+        const birth = new Date(birthDate);
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
    onSnapshot(collection(db, "birthdays"), (snapshot) => {
         const listElement = document.getElementById('birthday-list');
         listElement.innerHTML = ''; // Nililinis ang listahan bago mag-load
@@ -47,6 +59,7 @@
             const dateParts = b.date.split('-');
             const bMonth = parseInt(dateParts[1]) - 1;
             const bDay = parseInt(dateParts[2]);
+            const age = calculateAge(b.date);
 
             // I-filter lang ang mga birthdays ngayong kasalukuyang buwan
             if (bMonth === currentMonth) {
@@ -54,7 +67,7 @@
                 const div = document.createElement('div');
                 div.className = `birthday-item ${isToday ? 'today' : ''}`;
                 div.innerHTML = `
-                    <span>🎂 <strong>${b.name}</strong> ${isToday ? '<strong>Today! 🎉</strong>' : ''}</span>
+                    <span>🎂 <strong>${b.name}</strong> (${age} years old) ${isToday ? '<strong>Today! 🎉</strong>' : ''}</span>
                     <span>${monthNames[bMonth]} ${bDay}</span>
                     <button class="edit-btn" onclick="editBirthday('${docSnap.id}', '${b.name}', '${b.date}')">Edit</button>
                     <button class="delete-btn" onclick="deleteBirthday('${docSnap.id}')">Delete</button>
@@ -258,6 +271,7 @@
             border-radius: 10px;
             margin-bottom: 5px;
             transition: background-color 0.3s ease;
+            flex-wrap: wrap;
         }
 
         .birthday-item:hover {
@@ -347,9 +361,65 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .container { flex-direction: column; align-items: center; }
-            .sticky-note { width: 90%; }
-            .main-card { width: 90%; }
+            .container { 
+                flex-direction: column; 
+                align-items: center; 
+                gap: 20px;
+            }
+            .sticky-note { 
+                width: 90%; 
+                max-width: 400px;
+                padding: 20px;
+                transform: rotate(0deg); /* Remove rotation for better mobile readability */
+            }
+            .main-card { 
+                width: 90%; 
+                padding: 20px;
+                min-width: unset;
+            }
+            .birthday-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .birthday-item span:first-child {
+                font-size: 1rem;
+            }
+            .birthday-item span:nth-child(2) {
+                font-size: 0.9rem;
+                color: #666;
+            }
+            .edit-btn, .delete-btn {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+            .add-form {
+                flex-direction: column;
+                gap: 15px;
+            }
+            input {
+                min-width: unset;
+                width: 100%;
+            }
+            button {
+                width: 100%;
+                padding: 10px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .author-tag {
+                position: static;
+                margin-bottom: 10px;
+                transform: none;
+                display: block;
+                text-align: center;
+            }
+            .cloud-footer {
+                font-size: 0.8rem;
+                padding: 8px 15px;
+                bottom: 10px;
+            }
         }
     </style>
 </head>
