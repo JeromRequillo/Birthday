@@ -14,7 +14,7 @@ You can view the live project here: **https://jeromrequillo.github.io/Birthday/*
 * **Smart Monthly Filtering:** The app automatically detects the current month and displays only the relevant celebrants, keeping the interface clutter-free.
 * **Celebration Mode:** Features an automatic **Confetti Blast** (via Canvas-Confetti) whenever a birthday matches the current calendar date.
 * **Time-Aware Greetings:** The subtitle dynamically changes based on the user's local time (Morning, Afternoon, or Evening greetings).
-* **Admin Controls:** Includes a password-protected system (`Default: 1234`) to Add, Edit, or Delete entries, preventing unauthorized changes.
+* **Admin Controls:** Includes a password-protected system (`Default: ****`) to Add, Edit, or Delete entries, preventing unauthorized changes.
 * **PWA Ready:** Includes service worker registration and manifest linking, allowing the site to be installed as a mobile app.
 * **Responsive UI:** Fully optimized for Desktop, Tablet, and Mobile views.
 
@@ -36,8 +36,8 @@ You can view the live project here: **https://jeromrequillo.github.io/Birthday/*
 
 To manage the list, the system will prompt for an admin password when trying to add, edit, or delete a name.
 
-* **Default Password:** `1234`
-* **How to change:** Locate the `addBirthday`, `editBirthday`, or `deleteBirthday` functions in the `<script>` tag and update the `pass === "1234"` condition.
+* **Default Password:** `***`
+* **How to change:** Locate the `addBirthday`, `editBirthday`, or `deleteBirthday` functions in the `<script>` tag and update the `pass === "***"` condition.
 
 ---
 
