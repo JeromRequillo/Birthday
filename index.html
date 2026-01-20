@@ -91,9 +91,29 @@
             `;
         }
     });
+
+    // Password getter function using modal
+    function getPassword() {
+        return new Promise((resolve) => {
+            document.getElementById('password-modal').style.display = 'block';
+            document.getElementById('password-input').focus();
+            window.submitPassword = () => {
+                const pass = document.getElementById('password-input').value;
+                document.getElementById('password-modal').style.display = 'none';
+                document.getElementById('password-input').value = '';
+                resolve(pass);
+            };
+            window.cancelPassword = () => {
+                document.getElementById('password-modal').style.display = 'none';
+                document.getElementById('password-input').value = '';
+                resolve(null);
+            };
+        });
+    }
+
     // Password Protected Functions
     window.addBirthday = async function() {
-        const pass = prompt("Enter Admin Password:");
+        const pass = await getPassword();
         if (pass === "1234") { // ITO ANG PASSWORD MO
             const name = document.getElementById('nameInput').value;
             const date = document.getElementById('dateInput').value;
@@ -108,7 +128,7 @@
     };
 
     window.editBirthday = async function(id, currentName, currentDate) {
-        const pass = prompt("Enter Admin Password to edit:");
+        const pass = await getPassword();
         if (pass === "1234") {
             const newName = prompt("Enter new name:", currentName);
             const newDate = prompt("Enter new date (YYYY-MM-DD):", currentDate);
@@ -119,7 +139,7 @@
     };
 
     window.deleteBirthday = async function(id) {
-        const pass = prompt("Enter Admin Password to delete:");
+        const pass = await getPassword();
         if (pass === "1234") {
             if (confirm("Sure ka delete?")) { await deleteDoc(doc(db, "birthdays", id)); }
         } else { alert("Bawal!"); }
@@ -359,6 +379,38 @@
             50% { transform: translateY(-10px); }
         }
 
+        /* Password Modal */
+        #password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        #password-modal > div {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        #password-input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 200px;
+            margin: 10px 0;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .container { 
@@ -428,6 +480,17 @@
     <div class="cloud"></div>
     <div class="cloud"></div>
     <div class="cloud"></div>
+
+    <!-- Password Modal -->
+    <div id="password-modal">
+        <div>
+            <p>Enter Admin Password:</p>
+            <input type="password" id="password-input" placeholder="Password">
+            <br>
+            <button onclick="submitPassword()">Submit</button>
+            <button onclick="cancelPassword()">Cancel</button>
+        </div>
+    </div>
 
     <header>
         <div class="author-tag">Developer:<br>JEROM REQUILLO</div>
