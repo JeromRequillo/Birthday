@@ -1,551 +1,341 @@
 <!DOCTYPE html>
 <html lang="tl">
 <head>
-    <link rel="manifest" href="manifest.json">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Tracker | Requillo</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+  try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
 </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birthday Tracker | Requillo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Firebase SDK for online storage -->
-   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyCRl2LQBqPUc7uCqJp6sSwPSF6o-9dKb9w", 
-        authDomain: "birthday-tracker-dff7f.firebaseapp.com",
-        projectId: "birthday-tracker-dff7f",
-        storageBucket: "birthday-tracker-dff7f.firebasestorage.app",
-        messagingSenderId: "796866393410",
-        appId: "1:796866393410:web:c548cf89c5df9cb9ef04db",
-        measurementId: "G-7TPQ3R4JTP"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-    // Function to calculate age
-    function calculateAge(birthDate) {
-        const today = new Date();
-        const birth = new Date(birthDate);
-        let age = today.getFullYear() - birth.getFullYear();
-        const monthDiff = today.getMonth() - birth.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-            age--;
-        }
-        return age;
-    }
-
-   onSnapshot(collection(db, "birthdays"), (snapshot) => {
-        const listElement = document.getElementById('birthday-list');
-        listElement.innerHTML = ''; // Nililinis ang listahan bago mag-load
-        const now = new Date();
-        const currentMonth = now.getMonth();
-        const currentDay = now.getDate();
-        
-        // Ina-update ang text sa taas ng card
-        document.getElementById('current-month-text').innerText = `Happy Birthday to All Celebrant's this ${monthNames[currentMonth]}!`;
-
-        snapshot.forEach((docSnap) => {
-            const b = docSnap.data();
-            const dateParts = b.date.split('-');
-            const bMonth = parseInt(dateParts[1]) - 1;
-            const bDay = parseInt(dateParts[2]);
-            const age = calculateAge(b.date);
-
-            // I-filter lang ang mga birthdays ngayong kasalukuyang buwan
-            if (bMonth === currentMonth) {
-                const isToday = (bDay === currentDay);
-                const div = document.createElement('div');
-                div.className = `birthday-item ${isToday ? 'today' : ''}`;
-                div.innerHTML = `
-                    <span>🎂 <strong>${b.name}</strong> (${age} years old) ${isToday ? '<strong>Today! 🎉</strong>' : ''}</span>
-                    <span>${monthNames[bMonth]} ${bDay}</span>
-                    <button class="edit-btn" onclick="editBirthday('${docSnap.id}', '${b.name}', '${b.date}')">Edit</button>
-                    <button class="delete-btn" onclick="deleteBirthday('${docSnap.id}')">Delete</button>
-                `;
-                listElement.appendChild(div);
-                
-                // Magpapasabog ng confetti kung may birthday today
-                if (isToday) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            }
-        });
-
-        // CHECKS IF THE LIST IS EMPTY: 
-        // Lalabas ito kung walang nahanap na match sa current month sa loob ng forEach
-        if (listElement.innerHTML === '') {
-            listElement.innerHTML = `
-                <div style="text-align:center; padding: 30px; color: #666;">
-                    <p style="font-size: 3.5rem; margin: 0;">🎈</p>
-                    <p style="font-weight: 600;">Chill muna!</p>
-                    <p style="font-size: 0.9rem;">Walang birthday celebrations ngayong ${monthNames[currentMonth]}.</p>
-                </div>
-            `;
-        }
-    });
-
-    // Password getter function using modal
-    function getPassword() {
-        return new Promise((resolve) => {
-            document.getElementById('password-modal').style.display = 'block';
-            document.getElementById('password-input').focus();
-            window.submitPassword = () => {
-                const pass = document.getElementById('password-input').value;
-                document.getElementById('password-modal').style.display = 'none';
-                document.getElementById('password-input').value = '';
-                resolve(pass);
-            };
-            window.cancelPassword = () => {
-                document.getElementById('password-modal').style.display = 'none';
-                document.getElementById('password-input').value = '';
-                resolve(null);
-            };
-        });
-    }
-
-    // Password Protected Functions
-    window.addBirthday = async function() {
-        const pass = await getPassword();
-        if (pass === "1234") { // ITO ANG PASSWORD MO
-            const name = document.getElementById('nameInput').value;
-            const date = document.getElementById('dateInput').value;
-            if (name && date) {
-                await addDoc(collection(db, "birthdays"), { name, date });
-                document.getElementById('nameInput').value = '';
-                document.getElementById('dateInput').value = '';
-                // Celebrate adding a birthday
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ff6b9d', '#4a90e2', '#ffd700'] });
-            }
-        } else { alert("Maling Password!"); }
-    };
-
-    window.editBirthday = async function(id, currentName, currentDate) {
-        const pass = await getPassword();
-        if (pass === "1234") {
-            const newName = prompt("Enter new name:", currentName);
-            const newDate = prompt("Enter new date (YYYY-MM-DD):", currentDate);
-            if (newName && newDate) {
-                await updateDoc(doc(db, "birthdays", id), { name: newName, date: newDate });
-            }
-        } else { alert("Maling Password!"); }
-    };
-
-    window.deleteBirthday = async function(id) {
-        const pass = await getPassword();
-        if (pass === "1234") {
-            if (confirm("Sure ka delete?")) { await deleteDoc(doc(db, "birthdays", id)); }
-        } else { alert("Bawal!"); }
-    };
-</script>
-    
-    <style>
-        :root {
-            --sky-blue: #4a90e2;
-            --cloud-white: #f0f8ff;
-            --note-yellow: #fff9c4;
-            --accent-pink: #ff6b9d;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(to bottom, var(--sky-blue), #87ceeb);
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #333;
-            overflow-x: hidden;
-        }
-
-        /* Floating clouds animation */
-        .cloud {
-            position: absolute;
-            background: var(--cloud-white);
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: float 20s infinite linear;
-        }
-
-        .cloud:nth-child(1) { width: 100px; height: 60px; top: 10%; left: 10%; animation-delay: 0s; }
-        .cloud:nth-child(2) { width: 150px; height: 90px; top: 20%; right: 15%; animation-delay: 5s; }
-        .cloud:nth-child(3) { width: 80px; height: 50px; top: 60%; left: 20%; animation-delay: 10s; }
-
-        @keyframes float {
-            0% { transform: translateX(-100vw); }
-            100% { transform: translateX(100vw); }
-        }
-
-        /* Header Section */
-        header {
-            width: 100%;
-            padding: 20px;
-            text-align: center;
-            color: white;
-            position: relative;
-            z-index: 1;
-        }
-
-        .author-tag {
-            background: var(--note-yellow);
-            color: #333;
-            padding: 5px 15px;
-            transform: rotate(-5deg);
-            display: inline-block;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-            font-weight: bold;
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            animation: wiggle 2s infinite;
-        }
-
-        @keyframes wiggle {
-            0%, 100% { transform: rotate(-5deg); }
-            50% { transform: rotate(5deg); }
-        }
-
-        h1 { 
-            font-family: 'Fredoka One', cursive; 
-            font-size: 2.5rem; 
-            margin-bottom: 5px; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .subtitle { 
-            font-style: italic; 
-            margin-bottom: 20px; 
-            animation: fadeIn 2s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Main Layout */
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-            max-width: 1000px;
-            width: 90%;
-            margin-bottom: 50px;
-            z-index: 1;
-        }
-
-        /* Sticky Note Style */
-        .sticky-note {
-            background: var(--note-yellow);
-            padding: 25px;
-            width: 300px;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
-            position: relative;
-            transform: rotate(-2deg);
-            transition: transform 0.3s ease;
-        }
-
-        .sticky-note:hover {
-            transform: rotate(0deg) scale(1.05);
-        }
-
-        .sticky-note::before {
-            content: '📌';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        /* Card Style */
-        .main-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            padding: 30px;
-            flex: 1;
-            min-width: 350px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            animation: slideUp 1s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .birthday-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            border-radius: 10px;
-            margin-bottom: 5px;
-            transition: background-color 0.3s ease;
-            flex-wrap: wrap;
-        }
-
-        .birthday-item:hover {
-            background-color: #f9f9f9;
-        }
-
-        .birthday-item.today {
-            background-color: #fff9c4;
-            border: 2px solid #ffd700;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .btn-github {
-            background: #24292e;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 20px;
-            transition: background 0.3s ease;
-        }
-
-        .btn-github:hover {
-            background: #444;
-        }
-
-        /* Input Form */
-        .add-form {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        input { 
-            padding: 8px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px; 
-            flex: 1;
-            min-width: 150px;
-        }
-
-        button {
-            padding: 8px 15px;
-            background: var(--accent-pink);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background: #e55a8a;
-        }
-
-        .edit-btn, .delete-btn {
-            margin-left: 10px;
-            padding: 5px 10px;
-            font-size: 0.8rem;
-        }
-
-        .edit-btn { background: #4CAF50; }
-        .delete-btn { background: #f44336; }
-
-        .cloud-footer {
-            position: fixed;
-            bottom: 20px;
-            background: rgba(255,255,255,0.8);
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* Password Modal */
-        #password-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            z-index: 1000;
-        }
-
-        #password-modal > div {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-
-        #password-input {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 200px;
-            margin: 10px 0;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container { 
-                flex-direction: column; 
-                align-items: center; 
-                gap: 20px;
-            }
-            .sticky-note { 
-                width: 90%; 
-                max-width: 400px;
-                padding: 20px;
-                transform: rotate(0deg); /* Remove rotation for better mobile readability */
-            }
-            .main-card { 
-                width: 90%; 
-                padding: 20px;
-                min-width: unset;
-            }
-            .birthday-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .birthday-item span:first-child {
-                font-size: 1rem;
-            }
-            .birthday-item span:nth-child(2) {
-                font-size: 0.9rem;
-                color: #666;
-            }
-            .edit-btn, .delete-btn {
-                margin-left: 0;
-                margin-top: 5px;
-            }
-            .add-form {
-                flex-direction: column;
-                gap: 15px;
-            }
-            input {
-                min-width: unset;
-                width: 100%;
-            }
-            button {
-                width: 100%;
-                padding: 10px;
-            }
-            h1 {
-                font-size: 2rem;
-            }
-            .author-tag {
-                position: static;
-                margin-bottom: 10px;
-                transform: none;
-                display: block;
-                text-align: center;
-            }
-            .cloud-footer {
-                font-size: 0.8rem;
-                padding: 8px 15px;
-                bottom: 10px;
-            }
-        }
-    </style>
+<style>
+:root{--bg1:#4a90e2;--bg2:#87ceeb;--card:#fff;--text:#2b2f36;--muted:#5f6672;--note:#fff9c4;--note-text:#333;--accent:#d6336c;--accent-h:#b82a5b;--line:#e3e8ef;--item:#f5f9ff;--cloud:#f0f8ff;--cloud-o:.8;--ok:#2e7d32;--bad:#c62828}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#0f1b33;--bg2:#1d3557;--card:#1c2433;--text:#e8ecf3;--muted:#a3adbd;--note:#3d3a1f;--note-text:#f6f0b8;--accent:#e8588d;--accent-h:#f06fa0;--line:#2f3a50;--item:#232d40;--cloud-o:.1;--ok:#66bb6a;--bad:#ef6c6c}}
+:root[data-theme="dark"]{--bg1:#0f1b33;--bg2:#1d3557;--card:#1c2433;--text:#e8ecf3;--muted:#a3adbd;--note:#3d3a1f;--note-text:#f6f0b8;--accent:#e8588d;--accent-h:#f06fa0;--line:#2f3a50;--item:#232d40;--cloud-o:.1;--ok:#66bb6a;--bad:#ef6c6c}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Quicksand',sans-serif;background:linear-gradient(to bottom,var(--bg1),var(--bg2));background-attachment:fixed;min-height:100vh;color:var(--text);overflow-x:hidden;display:flex;flex-direction:column;align-items:center}
+.cloud{position:absolute;background:var(--cloud);border-radius:50%;opacity:var(--cloud-o);animation:float 40s infinite linear;z-index:0}
+.cloud:nth-child(1){width:100px;height:60px;top:10%;left:0}
+.cloud:nth-child(2){width:150px;height:90px;top:22%;left:0;animation-delay:-14s}
+.cloud:nth-child(3){width:80px;height:50px;top:60%;left:0;animation-delay:-27s}
+@keyframes float{from{transform:translateX(-20vw)}to{transform:translateX(110vw)}}
+header{width:100%;padding:20px;text-align:center;color:#fff;position:relative;z-index:1}
+.author-tag{background:var(--note);color:var(--note-text);padding:5px 15px;display:inline-block;box-shadow:2px 2px 5px rgba(0,0,0,.2);font-weight:700;position:absolute;left:20px;top:20px;transform:rotate(-5deg);animation:wiggle 2s infinite}
+@keyframes wiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.tools{position:absolute;right:20px;top:20px;display:flex;gap:8px}
+h1{font-family:'Fredoka One',cursive;font-size:2.4rem;margin:50px 0 5px;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
+.subtitle{font-style:italic;margin:0 0 10px}
+button{font:inherit;padding:8px 15px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:background .2s}
+button:hover{background:var(--accent-h)}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #ffd700;outline-offset:2px}
+.ghost{background:rgba(255,255,255,.22);padding:6px 12px;font-size:.85rem}
+.ghost:hover{background:rgba(255,255,255,.38)}
+.container{display:flex;gap:30px;padding:20px;max-width:1000px;width:100%;align-items:flex-start;position:relative;z-index:1}
+.sticky-note{background:var(--note);color:var(--note-text);padding:25px;width:300px;flex-shrink:0;transform:rotate(-2deg);box-shadow:5px 5px 15px rgba(0,0,0,.25)}
+.sticky-note h3{margin-top:0}.sticky-note ul{padding-left:18px;line-height:1.5}
+.btn-github{display:inline-block;margin-top:10px;background:#24292e;color:#fff;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:.85rem}
+.main-card{background:var(--card);flex:1;min-width:0;padding:25px;border-radius:14px;box-shadow:0 8px 25px rgba(0,0,0,.2)}
+.main-card h2{margin:0 0 4px}#current-month-text{color:var(--muted);margin:0 0 14px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tab{background:var(--item);color:var(--text);border:1px solid var(--line)}
+.tab:hover{background:var(--line)}
+.tab[aria-selected="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.filters{display:flex;gap:8px;margin-bottom:12px}
+input,select{padding:9px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--text);font:inherit;min-width:0}
+.filters input{flex:1}
+.birthday-item{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:8px;background:var(--item);border-radius:10px;border-left:5px solid var(--bg1)}
+.birthday-item.today{border-left-color:var(--accent);background:var(--note);color:var(--note-text)}
+.birthday-item.done{opacity:.65}
+.info{flex:1;min-width:0}.info strong{display:block;overflow-wrap:anywhere}
+.sub{font-size:.85rem;color:var(--muted)}.today .sub{color:inherit}
+.chip{display:inline-block;font-size:.72rem;padding:1px 8px;border-radius:20px;border:1px solid var(--line);margin-left:6px;vertical-align:middle}
+.when{text-align:right;font-weight:700;white-space:nowrap}
+.when small{display:block;font-weight:400;color:var(--muted)}.today .when small{color:inherit}
+.actions{display:none;gap:6px}.is-admin .actions{display:flex}
+.actions button{padding:5px 10px;font-size:.8rem}
+.edit-btn{background:var(--ok)}.delete-btn{background:var(--bad)}
+.empty{text-align:center;padding:30px;color:var(--muted)}.empty .big{font-size:3rem;margin:0}
+#admin-area{display:none;border-top:1px solid var(--line);margin-top:18px;padding-top:12px}.is-admin #admin-area{display:block}
+.add-form{display:flex;gap:10px;flex-wrap:wrap}.add-form input[type=text]{flex:1;min-width:140px}
+dialog{border:none;border-radius:12px;padding:22px;background:var(--card);color:var(--text);box-shadow:0 10px 30px rgba(0,0,0,.4);width:min(340px,90vw)}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog h3{margin-top:0}dialog label{display:block;margin:10px 0 4px;font-size:.85rem}dialog input,dialog select{width:100%}
+.row{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}.cancel{background:var(--muted)}
+.err{color:var(--bad);font-size:.85rem;min-height:1.1em;margin:8px 0 0}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:30px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:2000;max-width:90vw}
+#toast.show{opacity:1}
+.cloud-footer{position:relative;z-index:1;margin:10px 20px 30px;background:rgba(255,255,255,.85);color:#333;padding:10px 20px;border-radius:50px;font-size:.9rem;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+@media(max-width:768px){
+ .container{flex-direction:column;align-items:center;gap:20px;padding:12px}
+ .sticky-note{width:92%;max-width:420px;transform:none}.main-card{width:100%;padding:18px}
+ .author-tag{position:static;display:block;transform:none;animation:none;margin-bottom:10px}
+ .tools{position:static;justify-content:center;margin-bottom:6px}
+ h1{font-size:1.9rem;margin-top:10px}
+ .birthday-item{flex-wrap:wrap}.actions{width:100%}.add-form button{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.cloud,.author-tag{animation:none}.cloud{display:none}}
+</style>
 </head>
 <body>
-    <!-- Floating clouds -->
-    <div class="cloud"></div>
-    <div class="cloud"></div>
-    <div class="cloud"></div>
+<div class="cloud"></div><div class="cloud"></div><div class="cloud"></div>
 
-    <!-- Password Modal -->
-    <div id="password-modal">
-        <div>
-            <p>Enter Admin Password:</p>
-            <input type="password" id="password-input" placeholder="Password">
-            <br>
-            <button onclick="submitPassword()">Submit</button>
-            <button onclick="cancelPassword()">Cancel</button>
-        </div>
+<dialog id="edit-dialog">
+  <form id="edit-form">
+    <h3>I-edit ang birthday</h3>
+    <label for="edit-name">Pangalan</label><input type="text" id="edit-name" maxlength="60" required>
+    <label for="edit-date">Petsa</label><input type="date" id="edit-date" required>
+    <label for="edit-tag">Grupo</label>
+    <select id="edit-tag"><option>Family</option><option>Friends</option><option>Others</option></select>
+    <div class="row"><button type="button" class="cancel" id="edit-cancel">Cancel</button><button type="submit">Save changes</button></div>
+  </form>
+</dialog>
+
+<header>
+  <div class="author-tag">Developer:<br>JEROM REQUILLO</div>
+  <div class="tools">
+    <button class="ghost" id="bell-btn" title="Reminder kapag binuksan ang app">🔔 Reminders</button>
+    <button class="ghost" id="theme-btn" aria-label="Palitan ang theme">🌙</button>
+    <button class="ghost" id="auth-btn">Login with Google</button>
+  </div>
+  <h1>Birthday Tracker / Greeting Page</h1>
+  <p class="subtitle" id="hero-subtitle">🎂 My Family &amp; Friends Birthday Wall</p>
+</header>
+
+<div class="container">
+  <div class="sticky-note">
+    <h3>⭐ HAPPY BIRTHDAY</h3>
+    <ul>
+      <li>“Hope all your birthday wishes come true!”</li>
+      <li>“It's your special day — get out there and celebrate!”</li>
+      <li>“I hope your celebration gives you many happy memories!”</li>
+      <li>“Happy birthday! Here’s to more life, love, and adventures with you to come!”</li>
+      <li>“Wishing you a birthday that’s just as wonderful as you are!”</li>
+    </ul>
+    <a href="https://github.com/JeromRequillo/Birthday" class="btn-github">View Code on GitHub</a>
+  </div>
+
+  <div class="main-card">
+    <h2>Birthdays 🥳</h2>
+    <p id="current-month-text"></p>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="month" aria-selected="true">Ngayong buwan</button>
+      <button class="tab" role="tab" data-tab="soon" aria-selected="false">Susunod na 30 araw</button>
+      <button class="tab" role="tab" data-tab="all" aria-selected="false">Lahat</button>
     </div>
-
-    <header>
-        <div class="author-tag">Developer:<br>JEROM REQUILLO</div>
-        <h1>Birthday Tracker / Greeting Page</h1>
-       <p class="subtitle" id="hero-subtitle">🎂 My Family & Friends Birthday Wall</p>
-    </header>
-
-    <div class="container">
-        <div class="sticky-note">
-            <h3>⭐HAPPY BIRTHDAY</h3>
-            <ul>
-                <li>“Hope all your birthday wishes come true!”</li>
-                <li>“It's your special day — get out there and celebrate!”</li>
-                <li>“I hope your celebration gives you many happy memories!”</li>
-                <li>“Happy birthday! Here’s to more life, love, and adventures with you to come!”</li>
-                <li>“Wishing you a birthday that’s just as wonderful as you are!”</li>
-            </ul>
-            <a href="https://github.com/JeromRequillo/Birthday" class="btn-github">View Code on GitHub</a>
-        </div>
-
-        <div class="main-card">
-            <h2 id="month-title">Birthdays This Month 🥳</h2>
-            <p id="current-month-text"></p>
-            
-            <div id="birthday-list">
-                <!-- Birthdays will be loaded here -->
-            </div>
-
-            <hr>
-            <h4>Magdagdag ng Birthday:</h4>
-            <div class="add-form">
-                <input type="text" id="nameInput" placeholder="Pangalan">
-                <input type="date" id="dateInput">
-                <button onclick="addBirthday()">Add</button>
-            </div>
-        </div>
+    <div class="filters">
+      <input type="search" id="search" placeholder="Hanapin ang pangalan" aria-label="Hanapin ang pangalan">
+      <select id="tag-filter" aria-label="Filter ayon sa grupo"><option value="all">Lahat</option><option>Family</option><option>Friends</option><option>Others</option></select>
     </div>
-    
-    <script>
-        // Update subtitle based on time of day
-        const hours = new Date().getHours();
-        const subtitleElement = document.getElementById('hero-subtitle');
+    <div id="birthday-list" aria-live="polite"></div>
 
-        if (hours < 12) {
-            subtitleElement.innerText = "☕ Magandang umaga! Silipin ang mga celebrants ngayong araw.";
-        } else if (hours < 18) {
-            subtitleElement.innerText = "🌤️ Happy Afternoon! Keep track of your favorite people.";
-        } else {
-            subtitleElement.innerText = "🌙 Malapit na ang birthday ni... Silipin ang listahan!";
-        }
-    </script>
-    
-    <div class="cloud-footer">
-        ✨ <strong>🎂 "Where every special day is remembered and celebrated."</strong> Never miss a wish. Never miss a party.
+    <div id="admin-area">
+      <h4>Magdagdag ng Birthday</h4>
+      <div class="add-form">
+        <input type="text" id="nameInput" placeholder="Pangalan" maxlength="60" aria-label="Pangalan">
+        <input type="date" id="dateInput" aria-label="Petsa ng kapanganakan">
+        <select id="tagInput" aria-label="Grupo"><option>Family</option><option>Friends</option><option>Others</option></select>
+        <button id="add-btn">Add birthday</button>
+      </div>
     </div>
+  </div>
+</div>
 
+<div class="cloud-footer">✨ <strong>“Where every special day is remembered and celebrated.”</strong> Never miss a wish. Never miss a party.</div>
+<div id="toast" role="status"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyCRl2LQBqPUc7uCqJp6sSwPSF6o-9dKb9w",
+  authDomain: "birthday-tracker-dff7f.firebaseapp.com",
+  projectId: "birthday-tracker-dff7f",
+  storageBucket: "birthday-tracker-dff7f.firebasestorage.app",
+  messagingSenderId: "796866393410",
+  appId: "1:796866393410:web:c548cf89c5df9cb9ef04db",
+  measurementId: "G-7TPQ3R4JTP"
+});
+const db = getFirestore(app);
+let auth = null, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged;
+try {
+  const a = await import("https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js");
+  ({ signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } = a);
+  auth = a.getAuth(app);
+} catch (e) { console.error("Auth unavailable:", e); }
+const col = collection(db, "birthdays");
+
+const $ = id => document.getElementById(id);
+const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const isLeap = y => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+const occurrence = (y, m, d) => (m === 2 && d === 29 && !isLeap(y)) ? new Date(y, 2, 1) : new Date(y, m - 1, d);
+
+let items = [], tab = "month", firstLoad = true, editId = null;
+
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 3000); }
+
+/* ---------- data ---------- */
+function compute() {
+  const n = new Date(), today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  return items.filter(b => /^\d{4}-\d{2}-\d{2}$/.test(b.date || "")).map(b => {
+    const [y, m, d] = b.date.split("-").map(Number);
+    let yr = today.getFullYear(), occ = occurrence(yr, m, d);
+    if (occ < today) { yr++; occ = occurrence(yr, m, d); }
+    const days = Math.round((occ - today) / 864e5), turns = yr - y;
+    return { ...b, y, m, d, days, turns, age: days === 0 ? turns : turns - 1, tag: b.tag || "Others" };
+  });
+}
+
+function view(all) {
+  const n = new Date(), q = $("search").value.trim().toLowerCase(), tg = $("tag-filter").value;
+  let list = all.filter(b => (!q || (b.name || "").toLowerCase().includes(q)) && (tg === "all" || b.tag === tg));
+  if (tab === "month") list = list.filter(b => b.m === n.getMonth() + 1).sort((a, b) => a.d - b.d);
+  else if (tab === "soon") list = list.filter(b => b.days <= 30).sort((a, b) => a.days - b.days);
+  else list = list.sort((a, b) => a.days - b.days);
+  return list;
+}
+
+/* ---------- render ---------- */
+function render() {
+  const all = compute(), list = view(all), box = $("birthday-list"), n = new Date();
+  box.replaceChildren();
+  $("current-month-text").textContent = `Happy Birthday sa lahat ng celebrants ngayong ${MONTHS[n.getMonth()]}!`;
+
+  list.forEach(b => {
+    const passed = tab === "month" && b.d < n.getDate();
+    const row = el("div", "birthday-item" + (b.days === 0 ? " today" : "") + (passed ? " done" : ""));
+    const info = el("div", "info"), nm = el("strong", null, (b.days === 0 ? "🎂 " : "") + b.name);
+    nm.appendChild(el("span", "chip", b.tag));
+    const sub = b.days === 0 ? `${b.turns} years old ngayon!` : passed ? `${b.age} years old` : `Magiging ${b.turns} years old`;
+    info.append(nm, el("span", "sub", sub));
+    const when = el("div", "when", b.days === 0 ? "Today! 🎉" : passed ? "Tapos na ✓" : b.days === 1 ? "Bukas!" : `${b.days} days`);
+    when.appendChild(el("small", null, `${MONTHS[b.m - 1]} ${b.d}`));
+    const act = el("div", "actions");
+    const eb = el("button", "edit-btn", "Edit"), db_ = el("button", "delete-btn", "Delete");
+    eb.addEventListener("click", () => openEdit(b));
+    db_.addEventListener("click", () => remove(b));
+    act.append(eb, db_);
+    row.append(info, when, act);
+    box.appendChild(row);
+  });
+
+  if (!list.length) {
+    const msgs = { month: `Walang birthday celebrations ngayong ${MONTHS[n.getMonth()]}.`, soon: "Walang birthday sa susunod na 30 araw.", all: "Wala pang nakalistang birthday." };
+    const e = el("div", "empty");
+    e.append(el("p", "big", "🎈"), el("p", null, ($("search").value || $("tag-filter").value !== "all") ? "Walang tugma sa hinahanap mo." : msgs[tab]));
+    box.appendChild(e);
+  }
+  subtitle(all);
+}
+
+function subtitle(all) {
+  const s = $("hero-subtitle");
+  if (!all.length) return;
+  const sorted = [...all].sort((a, b) => a.days - b.days), today = sorted.filter(b => b.days === 0);
+  if (today.length) s.textContent = `🎉 Happy birthday, ${today.map(b => b.name).join(" at ")}!`;
+  else { const nx = sorted[0]; s.textContent = `🎂 Susunod: ${nx.name}, ${nx.days === 1 ? "bukas na" : `sa ${nx.days} araw`}!`; }
+}
+
+/* ---------- live data ---------- */
+onSnapshot(col, snap => {
+  items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  render();
+  if (firstLoad) {
+    firstLoad = false;
+    const all = compute();
+    if (all.some(b => b.days === 0)) confetti({ particleCount: 150, spread: 70, origin: { y: .6 } });
+    notifyDue(all);
+  }
+}, () => { $("birthday-list").replaceChildren(el("div", "empty", "Hindi ma-load ang listahan. Subukan ulit mamaya.")); });
+
+/* ---------- tabs and filters ---------- */
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  tab = t.dataset.tab;
+  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
+  render();
+}));
+$("search").addEventListener("input", render);
+$("tag-filter").addEventListener("change", render);
+
+/* ---------- auth ---------- */
+if (auth) onAuthStateChanged(auth, u => {
+  document.body.classList.toggle("is-admin", !!u);
+  $("auth-btn").textContent = u ? "Logout" : "Login with Google";
+});
+$("auth-btn").addEventListener("click", async () => {
+  if (!auth) return toast("Hindi ma-load ang login. Buksan ang site sa https (GitHub Pages), hindi sa file.");
+  if (auth.currentUser) { await signOut(auth); return toast("Naka-logout na."); }
+  try { await signInWithPopup(auth, new GoogleAuthProvider()); toast("Naka-login ka na."); }
+  catch (e) {
+    if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return;
+    toast(e.code === "auth/unauthorized-domain" ? "I-add ang domain sa Authorized domains." : "Hindi nag-login. Subukan ulit.");
+  }
+});
+
+/* ---------- admin actions ---------- */
+const guard = async fn => {
+  try { await fn(); return true; }
+  catch (e) { toast(e.code === "permission-denied" ? "Walang permission. Mag-login muna." : "May error. Subukan ulit."); return false; }
+};
+
+$("add-btn").addEventListener("click", async () => {
+  const name = $("nameInput").value.trim(), date = $("dateInput").value, tag = $("tagInput").value;
+  if (!name || !date) return toast("Ilagay ang pangalan at petsa.");
+  if (await guard(() => addDoc(col, { name, date, tag }))) {
+    $("nameInput").value = ""; $("dateInput").value = "";
+    confetti({ particleCount: 100, spread: 70, origin: { y: .6 }, colors: ["#ff6b9d", "#4a90e2", "#ffd700"] });
+    toast("Naidagdag na.");
+  }
+});
+
+function openEdit(b) {
+  editId = b.id; $("edit-name").value = b.name; $("edit-date").value = b.date; $("edit-tag").value = b.tag;
+  $("edit-dialog").showModal();
+}
+$("edit-cancel").addEventListener("click", () => $("edit-dialog").close());
+$("edit-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("edit-name").value.trim(), date = $("edit-date").value, tag = $("edit-tag").value;
+  if (await guard(() => updateDoc(doc(db, "birthdays", editId), { name, date, tag }))) { $("edit-dialog").close(); toast("Na-save na."); }
+});
+async function remove(b) {
+  if (confirm(`I-delete si ${b.name}?`) && await guard(() => deleteDoc(doc(db, "birthdays", b.id)))) toast("Na-delete na.");
+}
+
+/* ---------- theme ---------- */
+const root = document.documentElement;
+const dark = () => root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+const paintTheme = () => { $("theme-btn").textContent = dark() ? "☀️" : "🌙"; };
+$("theme-btn").addEventListener("click", () => { const t = dark() ? "light" : "dark"; root.dataset.theme = t; ls.set("theme", t); paintTheme(); });
+paintTheme();
+
+/* ---------- reminders (fires when the app is opened) ---------- */
+const bell = $("bell-btn");
+const paintBell = () => { bell.textContent = ("Notification" in window && Notification.permission === "granted") ? "🔔 Reminders: On" : "🔔 Reminders"; };
+bell.addEventListener("click", async () => {
+  if (!("Notification" in window)) return toast("Hindi supported ng browser na ito.");
+  if (Notification.permission === "denied") return toast("Naka-block ang notifications sa browser settings.");
+  await Notification.requestPermission(); paintBell();
+  if (Notification.permission === "granted") { ls.set("notified", ""); notifyDue(compute()); }
+});
+async function notifyDue(all) {
+  paintBell();
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+  const key = new Date().toDateString();
+  if (ls.get("notified") === key) return;
+  const due = all.filter(b => b.days <= 1).sort((a, b) => a.days - b.days);
+  if (!due.length) return;
+  ls.set("notified", key);
+  const body = due.map(b => `${b.name} (${b.days === 0 ? "ngayon" : "bukas"})`).join(", ");
+  const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+  if (reg) reg.showNotification("🎂 Birthday Alert", { body }); else new Notification("🎂 Birthday Alert", { body });
+}
+paintBell();
+</script>
 </body>
 </html>
