@@ -102,6 +102,13 @@ dialog h3{margin-top:0}dialog label{display:block;margin:10px 0 4px;font-size:.8
 #spot-close{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:5;background:#fff;color:#5a0030;font-weight:700;padding:12px 26px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.35)}
 #spot-close:hover{background:#ffe14d}
 .spot-row{background:#7b2ff7}
+.tp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:22px}
+.tp-card{background:rgba(255,255,255,.96);color:#5a0030;border-radius:16px;padding:18px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:0 6px 0 #1b1464,0 12px 24px rgba(0,0,0,.35);transition:transform .2s ease,background .2s ease}
+.tp-card:hover{background:#ffe14d;transform:translateY(-4px) rotate(-1deg)}
+.tp-card strong{font-family:'Fredoka One',cursive;font-weight:400;font-size:clamp(1.3rem,3.4vw,2rem);overflow-wrap:anywhere}
+.tp-hint{margin:20px 0 0;font-weight:600}
+.tp-back{margin-top:22px;background:rgba(255,255,255,.2);border:2px solid #fff}
+.tp-back:hover{background:rgba(255,255,255,.35)}
 /* polish */
 h1{font-size:3rem;letter-spacing:.5px;text-shadow:0 2px 0 rgba(0,0,0,.12),0 6px 18px rgba(0,0,0,.28)}
 .subtitle{display:inline-block;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);padding:6px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.35)}
@@ -312,7 +319,9 @@ function subtitle(all) {
 }
 
 /* ---------- spotlight ---------- */
-let spotList = [], spotIdx = 0, spotTimer;
+let spotList = [];
+const grommets = () => ["g1", "g2", "g3", "g4"].map(c => el("i", "gr " + c));
+const replay = t => { t.style.animation = "none"; void t.offsetWidth; t.style.animation = ""; };
 function party() {
   const end = Date.now() + 3000;
   (function f() {
@@ -330,36 +339,39 @@ function balloons() {
     s.prepend(b);
   }
 }
-function startTimer() {
-  clearInterval(spotTimer);
-  if (spotList.length > 1) spotTimer = setInterval(() => slide((spotIdx + 1) % spotList.length), 8000);
+function board() {
+  const t = $("tarp"), grid = el("div", "tp-grid");
+  t.replaceChildren(...grommets());
+  spotList.forEach((b, i) => {
+    const c = el("button", "tp-card");
+    c.append(el("strong", null, b.name), el("span", null, `Turns ${b.turns}`));
+    c.addEventListener("click", () => { slide(i); party(); });
+    grid.appendChild(c);
+  });
+  t.append(el("div", "tp-script", "Happy Birthday!"), el("div", "tp-ribbon", "to all of today’s celebrants"), el("p", "tp-hint", "Click a name to see their birthday banner"), grid);
+  replay(t);
 }
 function slide(i) {
-  spotIdx = i;
   const b = spotList[i], t = $("tarp"), len = b.name.length, s = len <= 8 ? 15 : len <= 12 ? 11 : len <= 18 ? 8 : 6;
-  t.replaceChildren(...["g1", "g2", "g3", "g4"].map(c => el("i", "gr " + c)));
+  t.replaceChildren(...grommets());
   const name = el("h2", "tp-name", b.name); name.style.fontSize = `${s}vmin`;
   const age = el("div", "tp-age"); age.append(el("b", null, String(b.turns)), el("small", null, "years old"));
   t.append(el("div", "tp-script", "Happy Birthday!"), name, age, el("div", "tp-ribbon", "Wishing you a day as special as you are!"), el("span", "tp-tag", b.tag));
   if (spotList.length > 1) {
-    const d = el("div", "tp-dots");
-    spotList.forEach((x, j) => {
-      const dot = el("button", j === i ? "on" : "");
-      dot.setAttribute("aria-label", `Show ${x.name}`);
-      dot.addEventListener("click", () => { slide(j); startTimer(); });
-      d.appendChild(dot);
-    });
-    t.appendChild(d);
+    const back = el("button", "tp-back", "← All celebrants");
+    back.addEventListener("click", board);
+    t.appendChild(back);
   }
-  t.style.animation = "none"; void t.offsetWidth; t.style.animation = "";
+  replay(t);
 }
 function openSpot(list) {
   if (!list.length) return;
-  spotList = list; balloons(); slide(0);
+  spotList = list; balloons();
+  if (list.length > 1) board(); else slide(0);
   $("spot").hidden = false; document.body.style.overflow = "hidden";
-  $("spot-close").focus(); startTimer(); party();
+  $("spot-close").focus(); party();
 }
-function closeSpot() { $("spot").hidden = true; document.body.style.overflow = ""; clearInterval(spotTimer); }
+function closeSpot() { $("spot").hidden = true; document.body.style.overflow = ""; }
 $("spot-close").addEventListener("click", closeSpot);
 $("spot-btn").addEventListener("click", () => openSpot(compute().filter(b => b.days === 0)));
 addEventListener("keydown", e => { if (e.key === "Escape" && !$("spot").hidden) closeSpot(); });
