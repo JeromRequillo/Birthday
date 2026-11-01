@@ -101,7 +101,8 @@ dialog h3{margin-top:0}dialog label{display:block;margin:10px 0 4px;font-size:.8
 .tp-dots button.on{background:#ffd700}
 #spot-close{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:5;background:#fff;color:#5a0030;font-weight:700;padding:12px 26px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.35)}
 #spot-close:hover{background:#ffe14d}
-.spot-row{background:#7b2ff7}
+.spot-row{background:#7b2ff7;padding:6px 12px;font-size:.8rem}
+.spot-row:hover{background:#6420d4}
 .tp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:22px}
 .tp-card{background:rgba(255,255,255,.96);color:#5a0030;border-radius:16px;padding:18px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:0 6px 0 #1b1464,0 12px 24px rgba(0,0,0,.35);transition:transform .2s ease,background .2s ease}
 .tp-card:hover{background:#ffe14d;transform:translateY(-4px) rotate(-1deg)}
@@ -295,8 +296,8 @@ function render() {
     sb.addEventListener("click", () => openSpot([b]));
     eb.addEventListener("click", () => openEdit(b));
     db_.addEventListener("click", () => remove(b));
-    act.append(sb, eb, db_);
-    row.append(tile, info, when, act);
+    act.append(eb, db_);
+    row.append(tile, info, when, sb, act);
     box.appendChild(row);
   });
 
