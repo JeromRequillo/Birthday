@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="tl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Birthday Tracker | Requillo</title>
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
@@ -76,6 +76,32 @@ dialog h3{margin-top:0}dialog label{display:block;margin:10px 0 4px;font-size:.8
 #toast.show{opacity:1}
 .cloud-footer{position:relative;z-index:1;margin:10px 20px 30px;background:rgba(255,255,255,.85);color:#333;padding:10px 20px;border-radius:50px;font-size:.9rem;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,.1);animation:bounce 2s infinite}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+/* spotlight tarpaulin */
+#spot{position:fixed;inset:0;z-index:900;overflow:auto;display:flex;padding:24px 12px 96px;background:#1f49b3}
+#spot[hidden]{display:none}
+#spot::before{content:"";position:fixed;inset:-60%;background:repeating-conic-gradient(#2a5bd7 0 6deg,#1c3fa0 6deg 12deg);animation:spin 90s linear infinite;z-index:0}
+#spot::after{content:"";position:fixed;inset:0;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.35),transparent 55%);z-index:0;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.balloon{position:fixed;bottom:-90px;left:var(--x);font-size:var(--s);z-index:1;pointer-events:none;animation:rise var(--d) linear infinite;animation-delay:var(--w)}
+@keyframes rise{0%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-60vh) rotate(8deg)}100%{transform:translateY(-130vh) rotate(-8deg)}}
+.tarp{position:relative;z-index:2;margin:auto;width:min(960px,94vw);padding:clamp(28px,5vw,60px) clamp(18px,4vw,50px);border-radius:20px;background:linear-gradient(160deg,#ff3d7f,#9b2ff0 55%,#3a63e0);border:10px solid #fff;box-shadow:0 0 0 6px #ffd700,0 30px 70px rgba(0,0,0,.55);text-align:center;color:#fff;animation:tarpIn .9s cubic-bezier(.2,1.3,.4,1)}
+@keyframes tarpIn{from{opacity:0;transform:scale(.7) rotate(-3deg)}to{opacity:1;transform:none}}
+.gr{position:absolute;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9aa0a8);box-shadow:inset 0 0 0 3px #c7ccd3,0 1px 3px rgba(0,0,0,.5)}
+.g1{top:8px;left:8px}.g2{top:8px;right:8px}.g3{bottom:8px;left:8px}.g4{bottom:8px;right:8px}
+.tp-script{font-family:'Pacifico',cursive;font-size:clamp(2rem,8vw,4.4rem);color:#ffe14d;text-shadow:0 4px 0 #b3002f,0 10px 22px rgba(0,0,0,.4);line-height:1.25}
+.tp-name{font-family:'Fredoka One',cursive;font-weight:400;margin:6px 0 0;line-height:1.05;color:#fff;letter-spacing:1px;text-shadow:0 6px 0 #1b1464,0 14px 28px rgba(0,0,0,.45);overflow-wrap:anywhere}
+.tp-age{position:relative;isolation:isolate;margin:34px auto 28px;width:clamp(120px,24vmin,190px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3a0,#ffc400 60%,#ff9100);color:#5a0030;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.4);line-height:1}
+.tp-age::before{content:"";position:absolute;inset:-22px;border-radius:50%;z-index:-1;background:repeating-conic-gradient(#ffd700 0 9deg,transparent 9deg 18deg);animation:spin 16s linear infinite}
+.tp-age b{font-family:'Fredoka One',cursive;font-weight:400;font-size:clamp(3rem,13vmin,5.5rem)}
+.tp-age small{font-weight:700;font-size:clamp(.8rem,2.4vmin,1.1rem);margin-top:4px}
+.tp-ribbon{display:inline-block;max-width:100%;background:#ffd700;color:#5a0030;font-weight:700;padding:12px clamp(30px,6vw,64px);clip-path:polygon(0 0,100% 0,96% 50%,100% 100%,0 100%,4% 50%);font-size:clamp(.95rem,2.6vw,1.3rem)}
+.tp-tag{display:block;margin-top:16px;font-weight:700;opacity:.9}
+.tp-dots{display:flex;gap:8px;justify-content:center;margin-top:18px}
+.tp-dots button{width:14px;height:14px;padding:0;border-radius:50%;background:rgba(255,255,255,.45)}
+.tp-dots button.on{background:#ffd700}
+#spot-close{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:5;background:#fff;color:#5a0030;font-weight:700;padding:12px 26px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+#spot-close:hover{background:#ffe14d}
+.spot-row{background:#7b2ff7}
 /* polish */
 h1{font-size:3rem;letter-spacing:.5px;text-shadow:0 2px 0 rgba(0,0,0,.12),0 6px 18px rgba(0,0,0,.28)}
 .subtitle{display:inline-block;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);padding:6px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.35)}
@@ -86,6 +112,7 @@ h1{font-size:3rem;letter-spacing:.5px;text-shadow:0 2px 0 rgba(0,0,0,.12),0 6px 
 .tabs{background:var(--item);padding:4px;border-radius:999px;display:inline-flex;gap:2px}
 .tab{background:transparent;border:none;color:var(--muted);border-radius:999px;padding:8px 16px;font-weight:600}
 .tab:hover{background:transparent;color:var(--text)}
+.tab[data-tab="all"]{display:none}body.is-admin .tab[data-tab="all"]{display:inline-block}
 .tab[aria-selected="true"]{background:var(--accent);color:#fff;box-shadow:0 4px 10px rgba(214,51,108,.35)}
 input,select{border-radius:10px;padding:10px 12px}
 input:focus,select:focus{border-color:var(--accent)}
@@ -113,7 +140,7 @@ input:focus,select:focus{border-color:var(--accent)}
  h1{font-size:1.9rem;margin-top:10px}
  .birthday-item{flex-wrap:wrap}.actions{width:100%}.add-form button{width:100%}
 }
-@media(prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}.cloud{display:none}}
+
 </style>
 </head>
 <body>
@@ -121,10 +148,10 @@ input:focus,select:focus{border-color:var(--accent)}
 
 <dialog id="edit-dialog">
   <form id="edit-form">
-    <h3>I-edit ang birthday</h3>
-    <label for="edit-name">Pangalan</label><input type="text" id="edit-name" maxlength="60" required>
-    <label for="edit-date">Petsa</label><input type="date" id="edit-date" required>
-    <label for="edit-tag">Grupo</label>
+    <h3>Edit birthday</h3>
+    <label for="edit-name">Name</label><input type="text" id="edit-name" maxlength="60" required>
+    <label for="edit-date">Date</label><input type="date" id="edit-date" required>
+    <label for="edit-tag">Group</label>
     <select id="edit-tag"><option>Family</option><option>Friends</option><option>Others</option></select>
     <div class="row"><button type="button" class="cancel" id="edit-cancel">Cancel</button><button type="submit">Save changes</button></div>
   </form>
@@ -133,8 +160,9 @@ input:focus,select:focus{border-color:var(--accent)}
 <header>
   <div class="author-tag">Developer:<br>JEROM REQUILLO</div>
   <div class="tools">
-    <button class="ghost" id="bell-btn" title="Reminder kapag binuksan ang app">🔔 Reminders</button>
-    <button class="ghost" id="theme-btn" aria-label="Palitan ang theme">🌙</button>
+    <button class="ghost" id="spot-btn" hidden>🎂 Celebrant</button>
+    <button class="ghost" id="bell-btn" title="Reminders when the app is opened">🔔 Reminders</button>
+    <button class="ghost" id="theme-btn" aria-label="Toggle theme">🌙</button>
     <button class="ghost" id="auth-btn">Admin login</button>
   </div>
   <h1>Birthday Tracker / Greeting Page</h1>
@@ -158,22 +186,22 @@ input:focus,select:focus{border-color:var(--accent)}
     <h2>Birthdays 🥳</h2>
     <p id="current-month-text"></p>
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" data-tab="month" aria-selected="true">Ngayong buwan</button>
-      <button class="tab" role="tab" data-tab="soon" aria-selected="false">Susunod na 30 araw</button>
-      <button class="tab" role="tab" data-tab="all" aria-selected="false">Lahat</button>
+      <button class="tab" role="tab" data-tab="month" aria-selected="true">This month</button>
+      <button class="tab" role="tab" data-tab="soon" aria-selected="false">Next 30 days</button>
+      <button class="tab" role="tab" data-tab="all" aria-selected="false">All</button>
     </div>
     <div class="filters">
-      <input type="search" id="search" placeholder="Hanapin ang pangalan" aria-label="Hanapin ang pangalan">
-      <select id="tag-filter" aria-label="Filter ayon sa grupo"><option value="all">Lahat</option><option>Family</option><option>Friends</option><option>Others</option></select>
+      <input type="search" id="search" placeholder="Search by name" aria-label="Search by name">
+      <select id="tag-filter" aria-label="Filter by group"><option value="all">All groups</option><option>Family</option><option>Friends</option><option>Others</option></select>
     </div>
     <div id="birthday-list" aria-live="polite"></div>
 
     <div id="admin-area">
-      <h4>Magdagdag ng Birthday</h4>
+      <h4>Add a birthday</h4>
       <div class="add-form">
-        <input type="text" id="nameInput" placeholder="Pangalan" maxlength="60" aria-label="Pangalan">
-        <input type="date" id="dateInput" aria-label="Petsa ng kapanganakan">
-        <select id="tagInput" aria-label="Grupo"><option>Family</option><option>Friends</option><option>Others</option></select>
+        <input type="text" id="nameInput" placeholder="Name" maxlength="60" aria-label="Name">
+        <input type="date" id="dateInput" aria-label="Date of birth">
+        <select id="tagInput" aria-label="Group"><option>Family</option><option>Friends</option><option>Others</option></select>
         <button id="add-btn">Add birthday</button>
       </div>
     </div>
@@ -181,6 +209,7 @@ input:focus,select:focus{border-color:var(--accent)}
 </div>
 
 <div class="cloud-footer">✨ <strong>“Where every special day is remembered and celebrated.”</strong> Never miss a wish. Never miss a party.</div>
+<div id="spot" hidden><div class="tarp" id="tarp"></div><button id="spot-close">See all birthdays</button></div>
 <div id="toast" role="status"></div>
 
 <script type="module">
@@ -241,43 +270,99 @@ function view(all) {
 function render() {
   const all = compute(), list = view(all), box = $("birthday-list"), n = new Date();
   box.replaceChildren();
-  $("current-month-text").textContent = `Happy Birthday sa lahat ng celebrants ngayong ${MONTHS[n.getMonth()]}!`;
+  $("current-month-text").textContent = `Happy birthday to all celebrants this ${MONTHS[n.getMonth()]}!`;
 
   list.forEach(b => {
     const passed = tab === "month" && b.d < n.getDate();
     const row = el("div", "birthday-item" + (b.days === 0 ? " today" : "") + (passed ? " done" : ""));
     const info = el("div", "info"), nm = el("strong", null, (b.days === 0 ? "🎂 " : "") + b.name);
     nm.appendChild(el("span", "chip c-" + b.tag, b.tag));
-    const sub = b.days === 0 ? `${b.turns} years old ngayon!` : passed ? `${b.age} years old` : `Magiging ${b.turns} years old`;
+    const sub = b.days === 0 ? `Turns ${b.turns} today!` : passed ? `${b.age} years old` : `Turning ${b.turns}`;
     info.append(nm, el("span", "sub", sub));
-    const when = el("div", "when", b.days === 0 ? "Today! 🎉" : passed ? "Tapos na ✓" : b.days === 1 ? "Bukas!" : `${b.days} days`);
+    const when = el("div", "when", b.days === 0 ? "Today! 🎉" : passed ? "Done ✓" : b.days === 1 ? "Tomorrow!" : `${b.days} days`);
     const tile = el("div", "tile");
     tile.append(el("span", "tm", MONTHS[b.m - 1].slice(0, 3)), el("span", "td", String(b.d)));
     const act = el("div", "actions");
     const eb = el("button", "edit-btn", "Edit"), db_ = el("button", "delete-btn", "Delete");
+    const sb = el("button", "spot-row", "Spotlight");
+    sb.addEventListener("click", () => openSpot([b]));
     eb.addEventListener("click", () => openEdit(b));
     db_.addEventListener("click", () => remove(b));
-    act.append(eb, db_);
+    act.append(sb, eb, db_);
     row.append(tile, info, when, act);
     box.appendChild(row);
   });
 
   if (!list.length) {
-    const msgs = { month: `Walang birthday celebrations ngayong ${MONTHS[n.getMonth()]}.`, soon: "Walang birthday sa susunod na 30 araw.", all: "Wala pang nakalistang birthday." };
+    const msgs = { month: `No birthdays in ${MONTHS[n.getMonth()]}.`, soon: "No birthdays in the next 30 days.", all: "No birthdays listed yet." };
     const e = el("div", "empty");
-    e.append(el("p", "big", "🎈"), el("p", null, ($("search").value || $("tag-filter").value !== "all") ? "Walang tugma sa hinahanap mo." : msgs[tab]));
+    e.append(el("p", "big", "🎈"), el("p", null, ($("search").value || $("tag-filter").value !== "all") ? "No matches found." : msgs[tab]));
     box.appendChild(e);
   }
   subtitle(all);
+  $("spot-btn").hidden = !all.some(b => b.days === 0);
 }
 
 function subtitle(all) {
   const s = $("hero-subtitle");
   if (!all.length) return;
   const sorted = [...all].sort((a, b) => a.days - b.days), today = sorted.filter(b => b.days === 0);
-  if (today.length) s.textContent = `🎉 Happy birthday, ${today.map(b => b.name).join(" at ")}!`;
-  else { const nx = sorted[0]; s.textContent = `🎂 Susunod: ${nx.name}, ${nx.days === 1 ? "bukas na" : `sa ${nx.days} araw`}!`; }
+  if (today.length) s.textContent = `🎉 Happy birthday, ${today.map(b => b.name).join(" and ")}!`;
+  else { const nx = sorted[0]; s.textContent = `🎂 Next: ${nx.name}, ${nx.days === 1 ? "tomorrow" : `in ${nx.days} days`}!`; }
 }
+
+/* ---------- spotlight ---------- */
+let spotList = [], spotIdx = 0, spotTimer;
+function party() {
+  const end = Date.now() + 3000;
+  (function f() {
+    confetti({ particleCount: 4, angle: 60, spread: 60, origin: { x: 0 }, zIndex: 2000 });
+    confetti({ particleCount: 4, angle: 120, spread: 60, origin: { x: 1 }, zIndex: 2000 });
+    if (Date.now() < end) requestAnimationFrame(f);
+  })();
+}
+function balloons() {
+  const s = $("spot");
+  if (s.querySelector(".balloon")) return;
+  for (let i = 0; i < 16; i++) {
+    const b = el("span", "balloon", ["🎈", "🎈", "🎉", "🎊"][i % 4]);
+    b.style.cssText = `--x:${Math.random() * 95}%;--d:${9 + Math.random() * 8}s;--w:${-Math.random() * 14}s;--s:${28 + Math.random() * 34}px`;
+    s.prepend(b);
+  }
+}
+function startTimer() {
+  clearInterval(spotTimer);
+  if (spotList.length > 1) spotTimer = setInterval(() => slide((spotIdx + 1) % spotList.length), 8000);
+}
+function slide(i) {
+  spotIdx = i;
+  const b = spotList[i], t = $("tarp"), len = b.name.length, s = len <= 8 ? 15 : len <= 12 ? 11 : len <= 18 ? 8 : 6;
+  t.replaceChildren(...["g1", "g2", "g3", "g4"].map(c => el("i", "gr " + c)));
+  const name = el("h2", "tp-name", b.name); name.style.fontSize = `${s}vmin`;
+  const age = el("div", "tp-age"); age.append(el("b", null, String(b.turns)), el("small", null, "years old"));
+  t.append(el("div", "tp-script", "Happy Birthday!"), name, age, el("div", "tp-ribbon", "Wishing you a day as special as you are!"), el("span", "tp-tag", b.tag));
+  if (spotList.length > 1) {
+    const d = el("div", "tp-dots");
+    spotList.forEach((x, j) => {
+      const dot = el("button", j === i ? "on" : "");
+      dot.setAttribute("aria-label", `Show ${x.name}`);
+      dot.addEventListener("click", () => { slide(j); startTimer(); });
+      d.appendChild(dot);
+    });
+    t.appendChild(d);
+  }
+  t.style.animation = "none"; void t.offsetWidth; t.style.animation = "";
+}
+function openSpot(list) {
+  if (!list.length) return;
+  spotList = list; balloons(); slide(0);
+  $("spot").hidden = false; document.body.style.overflow = "hidden";
+  $("spot-close").focus(); startTimer(); party();
+}
+function closeSpot() { $("spot").hidden = true; document.body.style.overflow = ""; clearInterval(spotTimer); }
+$("spot-close").addEventListener("click", closeSpot);
+$("spot-btn").addEventListener("click", () => openSpot(compute().filter(b => b.days === 0)));
+addEventListener("keydown", e => { if (e.key === "Escape" && !$("spot").hidden) closeSpot(); });
 
 /* ---------- live data ---------- */
 onSnapshot(col, snap => {
@@ -286,17 +371,18 @@ onSnapshot(col, snap => {
   if (firstLoad) {
     firstLoad = false;
     const all = compute();
-    if (all.some(b => b.days === 0)) confetti({ particleCount: 150, spread: 70, origin: { y: .6 } });
+    openSpot(all.filter(b => b.days === 0));
     notifyDue(all);
   }
-}, () => { $("birthday-list").replaceChildren(el("div", "empty", "Hindi ma-load ang listahan. Subukan ulit mamaya.")); });
+}, () => { $("birthday-list").replaceChildren(el("div", "empty", "Couldn't load the list. Please try again later.")); });
 
 /* ---------- tabs and filters ---------- */
-document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
-  tab = t.dataset.tab;
-  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
+function setTab(name) {
+  tab = name;
+  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x.dataset.tab === name));
   render();
-}));
+}
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
 $("search").addEventListener("input", render);
 $("tag-filter").addEventListener("change", render);
 
@@ -306,30 +392,31 @@ syncHash(); addEventListener("hashchange", syncHash);
 if (auth) onAuthStateChanged(auth, u => {
   document.body.classList.toggle("is-admin", !!u);
   $("auth-btn").textContent = u ? "Logout" : "Admin login";
+  if (!u && tab === "all") setTab("month");
 });
 $("auth-btn").addEventListener("click", async () => {
-  if (!auth) return toast("Hindi ma-load ang login. Buksan ang site sa https (GitHub Pages), hindi sa file.");
-  if (auth.currentUser) { await signOut(auth); return toast("Naka-logout na."); }
-  try { await signInWithPopup(auth, new GoogleAuthProvider()); toast("Naka-login ka na."); }
+  if (!auth) return toast("Login unavailable. Open the site over https (e.g. GitHub Pages), not from a file.");
+  if (auth.currentUser) { await signOut(auth); return toast("Logged out."); }
+  try { await signInWithPopup(auth, new GoogleAuthProvider()); toast("Logged in."); }
   catch (e) {
     if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return;
-    toast(e.code === "auth/unauthorized-domain" ? "I-add ang domain sa Authorized domains." : "Hindi nag-login. Subukan ulit.");
+    toast(e.code === "auth/unauthorized-domain" ? "Add this domain to Authorized domains in Firebase." : "Login failed. Please try again.");
   }
 });
 
 /* ---------- admin actions ---------- */
 const guard = async fn => {
   try { await fn(); return true; }
-  catch (e) { toast(e.code === "permission-denied" ? "Walang permission. Mag-login muna." : "May error. Subukan ulit."); return false; }
+  catch (e) { toast(e.code === "permission-denied" ? "No permission. Please log in first." : "Something went wrong. Please try again."); return false; }
 };
 
 $("add-btn").addEventListener("click", async () => {
   const name = $("nameInput").value.trim(), date = $("dateInput").value, tag = $("tagInput").value;
-  if (!name || !date) return toast("Ilagay ang pangalan at petsa.");
+  if (!name || !date) return toast("Enter a name and date.");
   if (await guard(() => addDoc(col, { name, date, tag }))) {
     $("nameInput").value = ""; $("dateInput").value = "";
     confetti({ particleCount: 100, spread: 70, origin: { y: .6 }, colors: ["#ff6b9d", "#4a90e2", "#ffd700"] });
-    toast("Naidagdag na.");
+    toast("Added.");
   }
 });
 
@@ -341,10 +428,10 @@ $("edit-cancel").addEventListener("click", () => $("edit-dialog").close());
 $("edit-form").addEventListener("submit", async e => {
   e.preventDefault();
   const name = $("edit-name").value.trim(), date = $("edit-date").value, tag = $("edit-tag").value;
-  if (await guard(() => updateDoc(doc(db, "birthdays", editId), { name, date, tag }))) { $("edit-dialog").close(); toast("Na-save na."); }
+  if (await guard(() => updateDoc(doc(db, "birthdays", editId), { name, date, tag }))) { $("edit-dialog").close(); toast("Saved."); }
 });
 async function remove(b) {
-  if (confirm(`I-delete si ${b.name}?`) && await guard(() => deleteDoc(doc(db, "birthdays", b.id)))) toast("Na-delete na.");
+  if (confirm(`Delete ${b.name}?`) && await guard(() => deleteDoc(doc(db, "birthdays", b.id)))) toast("Deleted.");
 }
 
 /* ---------- theme ---------- */
@@ -358,8 +445,8 @@ paintTheme();
 const bell = $("bell-btn");
 const paintBell = () => { bell.textContent = ("Notification" in window && Notification.permission === "granted") ? "🔔 Reminders: On" : "🔔 Reminders"; };
 bell.addEventListener("click", async () => {
-  if (!("Notification" in window)) return toast("Hindi supported ng browser na ito.");
-  if (Notification.permission === "denied") return toast("Naka-block ang notifications sa browser settings.");
+  if (!("Notification" in window)) return toast("This browser doesn't support notifications.");
+  if (Notification.permission === "denied") return toast("Notifications are blocked in your browser settings.");
   await Notification.requestPermission(); paintBell();
   if (Notification.permission === "granted") { ls.set("notified", ""); notifyDue(compute()); }
 });
@@ -371,7 +458,7 @@ async function notifyDue(all) {
   const due = all.filter(b => b.days <= 1).sort((a, b) => a.days - b.days);
   if (!due.length) return;
   ls.set("notified", key);
-  const body = due.map(b => `${b.name} (${b.days === 0 ? "ngayon" : "bukas"})`).join(", ");
+  const body = due.map(b => `${b.name} (${b.days === 0 ? "today" : "tomorrow"})`).join(", ");
   const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
   if (reg) reg.showNotification("🎂 Birthday Alert", { body }); else new Notification("🎂 Birthday Alert", { body });
 }
