@@ -163,6 +163,12 @@ input:focus,select:focus{border-color:var(--accent)}
 .c-Others{background:rgba(46,125,50,.15);color:var(--others)}
 .empty .big{font-size:3.5rem}
 .cloud-footer{backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.5)}
+.dfield{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px}
+.md{display:inline-flex;gap:6px}.md[hidden]{display:none}
+.noyr{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;white-space:nowrap}
+.noyr input{width:auto}
+dialog .dfield{display:flex}dialog .md{display:flex;width:100%}dialog .md select{flex:1}
+dialog .noyr{display:inline-flex;margin:0}
 /* celebrant animations */
 @keyframes glow{0%,100%{box-shadow:0 0 0 3px #ffd700,0 0 0 0 rgba(255,215,0,0)}50%{box-shadow:0 0 0 3px #ffd700,0 0 28px 10px rgba(255,215,0,.8)}}
 @keyframes cardGlow{0%,100%{box-shadow:0 0 0 4px #fff,0 14px 34px rgba(255,143,0,.55)}50%{box-shadow:0 0 0 4px #fff,0 0 46px 16px rgba(255,215,0,.9)}}
@@ -192,7 +198,7 @@ input:focus,select:focus{border-color:var(--accent)}
   <form id="edit-form">
     <h3>Edit birthday</h3>
     <label for="edit-name">Name</label><input type="text" id="edit-name" maxlength="60" required>
-    <label for="edit-date">Date</label><input type="date" id="edit-date" required>
+    <label for="edit-date">Date</label><span class="dfield" id="edit-datefield"><input type="date" id="edit-date"><span class="md" hidden><select class="m" aria-label="Month"><option value="">Month</option></select><select class="d" aria-label="Day"><option value="">Day</option></select></span><label class="noyr"><input type="checkbox"> Year unknown</label></span>
     <label for="edit-tag">Group</label>
     <select id="edit-tag"><option>Family</option><option>Friends</option><option>Others</option></select>
     <div class="row"><button type="button" class="cancel" id="edit-cancel">Cancel</button><button type="submit">Save changes</button></div>
@@ -202,6 +208,7 @@ input:focus,select:focus{border-color:var(--accent)}
 <header>
   <div class="author-tag">Developer:<br>JEROM REQUILLO</div>
   <div class="tools">
+    <button class="ghost" id="cal-btn" title="Download all birthdays as a calendar file">📅 Calendar</button>
     <button class="ghost" id="spot-btn">🎂 Spotlight</button>
     <button class="ghost" id="theme-btn" aria-label="Toggle theme">🌙</button>
     <button class="ghost" id="auth-btn">Admin login</button>
@@ -236,7 +243,7 @@ input:focus,select:focus{border-color:var(--accent)}
       <h4>Add a birthday</h4>
       <div class="add-form">
         <input type="text" id="nameInput" placeholder="Name" maxlength="60" aria-label="Name">
-        <input type="date" id="dateInput" aria-label="Date of birth">
+        <span class="dfield" id="add-date"><input type="date" id="dateInput" aria-label="Date of birth"><span class="md" hidden><select class="m" aria-label="Month"><option value="">Month</option></select><select class="d" aria-label="Day"><option value="">Day</option></select></span><label class="noyr"><input type="checkbox"> Year unknown</label></span>
         <select id="tagInput" aria-label="Group"><option>Family</option><option>Friends</option><option>Others</option></select>
         <button id="add-btn">Add birthday</button>
       </div>
@@ -285,11 +292,11 @@ function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add
 function compute() {
   const n = new Date(), today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
   return items.filter(b => /^\d{4}-\d{2}-\d{2}$/.test(b.date || "")).map(b => {
-    const [y, m, d] = b.date.split("-").map(Number);
+    const [y, m, d] = b.date.split("-").map(Number), noY = y === 0;
     let yr = today.getFullYear(), occ = occurrence(yr, m, d);
     if (occ < today) { yr++; occ = occurrence(yr, m, d); }
-    const days = Math.round((occ - today) / 864e5), turns = yr - y;
-    return { ...b, y, m, d, days, turns, age: days === 0 ? turns : turns - 1, tag: b.tag || "Others" };
+    const days = Math.round((occ - today) / 864e5), turns = noY ? null : yr - y;
+    return { ...b, y, m, d, noY, days, turns, age: noY ? null : (days === 0 ? turns : turns - 1), tag: b.tag || "Others" };
   });
 }
 
@@ -313,7 +320,7 @@ function render() {
     const row = el("div", "birthday-item" + (b.days === 0 ? " today" : "") + (passed ? " done" : ""));
     const info = el("div", "info"), nm = el("strong", null, (b.days === 0 ? "🎂 " : "") + b.name);
     nm.appendChild(el("span", "chip c-" + b.tag, b.tag));
-    const sub = b.days === 0 ? `Turns ${b.turns} today!` : passed ? `${b.age} years old` : `Turning ${b.turns}`;
+    const sub = b.noY ? (b.days === 0 ? "Happy birthday!" : "") : b.days === 0 ? `Turns ${b.turns} today!` : passed ? `${b.age} years old` : `Turning ${b.turns}`;
     info.append(nm, el("span", "sub", sub));
     const when = el("div", "when", b.days === 0 ? "Today! 🎉" : passed ? "Done ✓" : b.days === 1 ? "Tomorrow!" : `${b.days} days`);
     const tile = el("div", "tile");
@@ -379,7 +386,7 @@ function todayCard(all) {
   const txt = el("div", "tc-text"), btns = el("div", "tc-btns");
   txt.append(el("span", "tc-label", t.length > 1 ? "Today’s celebrants" : "Today’s celebrant"),
     el("strong", "tc-name", t.map(b => b.name).join(" and ")),
-    el("span", "tc-sub", t.length > 1 ? "Happy birthday to all! 🎉" : `Turns ${t[0].turns} today! 🎉`));
+    el("span", "tc-sub", t.length > 1 || t[0].noY ? "Happy birthday! 🎉" : `Turns ${t[0].turns} today! 🎉`));
   const sp = el("button", "tc-spot", "🎂 Open spotlight");
   sp.addEventListener("click", () => openSpot(t));
   btns.appendChild(sp);
@@ -400,6 +407,71 @@ async function greet(b) {
   try { await navigator.clipboard.writeText(text); toast("Greeting copied. Paste it in a message!"); }
   catch (e) { toast("Couldn’t copy the greeting. Please try again."); }
 }
+
+/* ---------- date fields (year optional) ---------- */
+const DF = w => ({ date: w.querySelector("input[type=date]"), md: w.querySelector(".md"), m: w.querySelector(".m"), d: w.querySelector(".d"), cb: w.querySelector(".noyr input") });
+const addF = DF($("add-date")), editF = DF($("edit-datefield"));
+const showMode = f => { f.date.hidden = f.cb.checked; f.md.hidden = !f.cb.checked; };
+[addF, editF].forEach(f => {
+  MONTHS.forEach((x, i) => f.m.add(new Option(x, i + 1)));
+  for (let i = 1; i <= 31; i++) f.d.add(new Option(i, i));
+  f.cb.addEventListener("change", () => showMode(f));
+});
+const pad = n => String(n).padStart(2, "0");
+function readDate(f) {
+  if (!f.cb.checked) return f.date.value || null;
+  const m = +f.m.value, d = +f.d.value;
+  if (!m || !d || new Date(2024, m - 1, d).getMonth() !== m - 1) return null;
+  return `0000-${pad(m)}-${pad(d)}`;
+}
+function writeDate(f, date) {
+  const [y, m, d] = date.split("-").map(Number);
+  f.cb.checked = y === 0; showMode(f);
+  if (y === 0) { f.m.value = m; f.d.value = d; f.date.value = ""; } else f.date.value = date;
+}
+function clearDate(f) { f.cb.checked = false; showMode(f); f.date.value = ""; f.m.value = ""; f.d.value = ""; }
+
+/* ---------- calendar file (.ics) ---------- */
+function fold(line) {
+  const enc = new TextEncoder(); let out = "", cur = 0;
+  for (const ch of line) {
+    const n = enc.encode(ch).length;
+    if (cur + n > 74) { out += "\r\n "; cur = 1; }
+    out += ch; cur += n;
+  }
+  return out;
+}
+const icsEsc = s => String(s).replace(/[\\;,]/g, "\\$&").replace(/\n/g, "\\n");
+function icsDay(dt) { return `${dt.getFullYear()}${pad(dt.getMonth() + 1)}${pad(dt.getDate())}`; }
+function downloadIcs(list, name) {
+  const n = new Date(), today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  const stamp = n.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Birthday Tracker//EN", "CALSCALE:GREGORIAN", "X-WR-CALNAME:Birthdays"];
+  list.forEach(b => {
+    const leapDay = b.m === 2 && b.d === 29, at = y => leapDay ? new Date(y, 2, 0) : new Date(y, b.m - 1, b.d);
+    let dt = at(today.getFullYear());
+    if (dt < today) dt = at(today.getFullYear() + 1);
+    const end = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() + 1), title = `${b.name}’s birthday`;
+    lines.push("BEGIN:VEVENT", `UID:${b.id}@birthday-tracker`, `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${icsDay(dt)}`, `DTEND;VALUE=DATE:${icsDay(end)}`,
+      leapDay ? "RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=-1" : "RRULE:FREQ=YEARLY",
+      `SUMMARY:${icsEsc("🎂 " + title)}`, "TRANSP:TRANSPARENT",
+      "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsEsc(title + " is tomorrow")}`, "TRIGGER:-PT15H", "END:VALARM",
+      "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsEsc(title + " is today")}`, "TRIGGER:PT9H", "END:VALARM",
+      "END:VEVENT");
+  });
+  lines.push("END:VCALENDAR");
+  const blob = new Blob([lines.map(fold).join("\r\n") + "\r\n"], { type: "text/calendar;charset=utf-8" });
+  const a = el("a"); a.href = URL.createObjectURL(blob); a.download = name.replace(/[^\w-]+/g, "_") + ".ics";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast("Calendar file downloaded. Open it to add the reminders.");
+}
+$("cal-btn").addEventListener("click", () => {
+  const all = compute();
+  if (!all.length) return toast("No birthdays listed yet.");
+  downloadIcs(all, "birthdays");
+});
 
 /* ---------- spotlight ---------- */
 let spotList = [];
@@ -427,7 +499,7 @@ function board() {
   t.replaceChildren(...grommets());
   spotList.forEach((b, i) => {
     const c = el("button", "tp-card");
-    c.append(el("strong", null, b.name), el("span", null, `Turns ${b.turns}`));
+    c.append(el("strong", null, b.name), el("span", null, b.noY ? b.tag : `Turns ${b.turns}`));
     c.addEventListener("click", () => { slide(i); party(); });
     grid.appendChild(c);
   });
@@ -438,11 +510,13 @@ function slide(i) {
   const b = spotList[i], t = $("tarp"), len = b.name.length, s = len <= 8 ? 15 : len <= 12 ? 11 : len <= 18 ? 8 : 6;
   t.replaceChildren(...grommets());
   const name = el("h2", "tp-name", b.name); name.style.fontSize = `${s}vmin`;
-  const age = el("div", "tp-age"); age.append(el("b", null, String(b.turns)), el("small", null, "years old"));
+  const age = el("div", "tp-age"); if (b.noY) age.append(el("b", null, "🎂")); else age.append(el("b", null, String(b.turns)), el("small", null, "years old"));
   t.append(el("div", "tp-script", "Happy Birthday!"), name, age, el("div", "tp-ribbon", "Wishing you a day as special as you are!"), el("span", "tp-tag", b.tag));
   const acts = el("div", "tp-actions"), g = el("button", "tp-greet", "Send greeting");
   g.addEventListener("click", () => greet(b));
-  acts.appendChild(g);
+  const cb = el("button", "tp-greet", "📅 Add to calendar");
+  cb.addEventListener("click", () => downloadIcs([b], `${b.name}-birthday`));
+  acts.append(g, cb);
   if (spotList.length > 1) {
     const back = el("button", "tp-back", "← All celebrants");
     back.addEventListener("click", board);
@@ -516,23 +590,24 @@ const guard = async fn => {
 };
 
 $("add-btn").addEventListener("click", async () => {
-  const name = $("nameInput").value.trim(), date = $("dateInput").value, tag = $("tagInput").value;
+  const name = $("nameInput").value.trim(), date = readDate(addF), tag = $("tagInput").value;
   if (!name || !date) return toast("Enter a name and date.");
   if (await guard(() => addDoc(col, { name, date, tag }))) {
-    $("nameInput").value = ""; $("dateInput").value = "";
+    $("nameInput").value = ""; clearDate(addF);
     confetti({ particleCount: 100, spread: 70, origin: { y: .6 }, colors: ["#ff6b9d", "#4a90e2", "#ffd700"] });
     toast("Added.");
   }
 });
 
 function openEdit(b) {
-  editId = b.id; $("edit-name").value = b.name; $("edit-date").value = b.date; $("edit-tag").value = b.tag;
+  editId = b.id; $("edit-name").value = b.name; writeDate(editF, b.date); $("edit-tag").value = b.tag;
   $("edit-dialog").showModal();
 }
 $("edit-cancel").addEventListener("click", () => $("edit-dialog").close());
 $("edit-form").addEventListener("submit", async e => {
   e.preventDefault();
-  const name = $("edit-name").value.trim(), date = $("edit-date").value, tag = $("edit-tag").value;
+  const name = $("edit-name").value.trim(), date = readDate(editF), tag = $("edit-tag").value;
+  if (!name || !date) return toast("Enter a name and a valid date.");
   if (await guard(() => updateDoc(doc(db, "birthdays", editId), { name, date, tag }))) { $("edit-dialog").close(); toast("Saved."); }
 });
 async function remove(b) {
