@@ -76,6 +76,7 @@ dialog h3{margin-top:0}dialog label{display:block;margin:10px 0 4px;font-size:.8
 #toast.show{opacity:1}
 .cloud-footer{position:relative;z-index:1;margin:10px 20px 30px;background:rgba(255,255,255,.85);color:#333;padding:10px 20px;border-radius:50px;font-size:.9rem;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,.1);animation:bounce 2s infinite}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+#quote{transition:opacity .3s ease;font-size:1.15rem;font-style:italic;line-height:1.5;margin:0}
 /* spotlight tarpaulin */
 #spot{position:fixed;inset:0;z-index:900;overflow:auto;display:flex;padding:24px 12px 96px;background:#1f49b3}
 #spot[hidden]{display:none}
@@ -110,6 +111,29 @@ dialog h3{margin-top:0}dialog label{display:block;margin:10px 0 4px;font-size:.8
 .tp-hint{margin:20px 0 0;font-weight:600}
 .tp-back{margin-top:22px;background:rgba(255,255,255,.2);border:2px solid #fff}
 .tp-back:hover{background:rgba(255,255,255,.35)}
+.next-card{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 14px;margin-bottom:14px;border-radius:12px;background:var(--item);color:var(--text);border:1px solid var(--line);font-size:.9rem;transition:background .2s}
+.next-card:hover{background:var(--line)}
+.next-card[hidden],.filters[hidden],.today-card[hidden]{display:none}
+.nc-emoji{font-size:1.2rem}
+.today-card{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:24px 28px;margin-bottom:18px;border-radius:22px;background:linear-gradient(135deg,#ffd700,#ff8f00 55%,#ff3d7f);color:#4a0d2b;box-shadow:0 0 0 4px #fff,0 14px 34px rgba(255,143,0,.55);animation:pulse 1.6s ease-in-out infinite}
+.tc-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tc-label{font-weight:700;font-size:.95rem}
+.tc-name{font-family:'Fredoka One',cursive;font-weight:400;font-size:clamp(2rem,7vw,3.4rem);line-height:1.05;overflow-wrap:anywhere;text-shadow:0 2px 0 rgba(255,255,255,.5)}
+.tc-sub{font-weight:700;font-size:1.1rem}
+.tc-btns{display:flex;gap:10px;flex-wrap:wrap}
+.tc-spot{background:#5a0030;color:#fff;font-weight:700;padding:12px 22px;border-radius:999px;font-size:1rem}
+.tc-spot:hover{background:#3d0020}
+.tc-greet{background:#fff;color:#5a0030;font-weight:700;padding:12px 22px;border-radius:999px;font-size:1rem}
+.tc-greet:hover{background:#ffe14d}
+.birthday-item.today{padding:16px 18px;box-shadow:0 0 0 3px #ffd700,0 10px 24px rgba(255,179,0,.4)}
+.today .info strong{font-size:1.2rem}
+.today .tile{width:62px;height:66px}
+.greet-row{background:#1f8a4c;padding:6px 12px;font-size:.8rem}
+.greet-row:hover{background:#176d3c}
+.tp-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.tp-actions button{margin:0}
+.tp-greet{background:#fff;color:#5a0030;font-weight:700;padding:10px 22px;border-radius:999px}
+.tp-greet:hover{background:#ffe14d}
 /* polish */
 h1{font-size:3rem;letter-spacing:.5px;text-shadow:0 2px 0 rgba(0,0,0,.12),0 6px 18px rgba(0,0,0,.28)}
 .subtitle{display:inline-block;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);padding:6px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.35)}
@@ -139,6 +163,16 @@ input:focus,select:focus{border-color:var(--accent)}
 .c-Others{background:rgba(46,125,50,.15);color:var(--others)}
 .empty .big{font-size:3.5rem}
 .cloud-footer{backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.5)}
+/* celebrant animations */
+@keyframes glow{0%,100%{box-shadow:0 0 0 3px #ffd700,0 0 0 0 rgba(255,215,0,0)}50%{box-shadow:0 0 0 3px #ffd700,0 0 28px 10px rgba(255,215,0,.8)}}
+@keyframes cardGlow{0%,100%{box-shadow:0 0 0 4px #fff,0 14px 34px rgba(255,143,0,.55)}50%{box-shadow:0 0 0 4px #fff,0 0 46px 16px rgba(255,215,0,.9)}}
+@keyframes shine{0%{left:-60%}60%,100%{left:130%}}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.birthday-item.today{animation:pulse 1.2s ease-in-out infinite,glow 1.6s ease-in-out infinite}
+.today .tile{animation:hop 1s ease-in-out infinite}
+.today-card{position:relative;overflow:hidden;animation:pulse 1.6s ease-in-out infinite,cardGlow 2s ease-in-out infinite}
+.today-card>*{position:relative}
+.today-card::before{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:shine 2.6s ease-in-out infinite}
 @media(max-width:768px){
  h1{font-size:2.1rem}.tabs{display:flex;overflow-x:auto}.tab{padding:8px 12px;font-size:.85rem;white-space:nowrap}
  .container{flex-direction:column;align-items:center;gap:20px;padding:12px}
@@ -168,8 +202,7 @@ input:focus,select:focus{border-color:var(--accent)}
 <header>
   <div class="author-tag">Developer:<br>JEROM REQUILLO</div>
   <div class="tools">
-    <button class="ghost" id="spot-btn" hidden>🎂 Celebrant</button>
-    <button class="ghost" id="bell-btn" title="Reminders when the app is opened">🔔 Reminders</button>
+    <button class="ghost" id="spot-btn">🎂 Spotlight</button>
     <button class="ghost" id="theme-btn" aria-label="Toggle theme">🌙</button>
     <button class="ghost" id="auth-btn">Admin login</button>
   </div>
@@ -180,25 +213,20 @@ input:focus,select:focus{border-color:var(--accent)}
 <div class="container">
   <div class="sticky-note">
     <h3>⭐ HAPPY BIRTHDAY</h3>
-    <ul>
-      <li>“Hope all your birthday wishes come true!”</li>
-      <li>“It's your special day — get out there and celebrate!”</li>
-      <li>“I hope your celebration gives you many happy memories!”</li>
-      <li>“Happy birthday! Here’s to more life, love, and adventures with you to come!”</li>
-      <li>“Wishing you a birthday that’s just as wonderful as you are!”</li>
-    </ul>
-    <a href="https://github.com/JeromRequillo/Birthday" class="btn-github">View Code on GitHub</a>
+    <p id="quote"></p>
   </div>
 
   <div class="main-card">
     <h2>Birthdays 🥳</h2>
     <p id="current-month-text"></p>
+    <div id="today-card" class="today-card" hidden></div>
+    <button id="next-card" class="next-card" hidden></button>
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" data-tab="month" aria-selected="true">This month</button>
       <button class="tab" role="tab" data-tab="soon" aria-selected="false">Next 30 days</button>
       <button class="tab" role="tab" data-tab="all" aria-selected="false">All</button>
     </div>
-    <div class="filters">
+    <div class="filters" id="filters">
       <input type="search" id="search" placeholder="Search by name" aria-label="Search by name">
       <select id="tag-filter" aria-label="Filter by group"><option value="all">All groups</option><option>Family</option><option>Friends</option><option>Others</option></select>
     </div>
@@ -268,7 +296,7 @@ function compute() {
 function view(all) {
   const n = new Date(), q = $("search").value.trim().toLowerCase(), tg = $("tag-filter").value;
   let list = all.filter(b => (!q || (b.name || "").toLowerCase().includes(q)) && (tg === "all" || b.tag === tg));
-  if (tab === "month") list = list.filter(b => b.m === n.getMonth() + 1).sort((a, b) => a.d - b.d);
+  if (tab === "month") list = list.filter(b => b.m === n.getMonth() + 1).sort((a, b) => (b.days === 0) - (a.days === 0) || a.d - b.d);
   else if (tab === "soon") list = list.filter(b => b.days <= 30).sort((a, b) => a.days - b.days);
   else list = list.sort((a, b) => a.days - b.days);
   return list;
@@ -294,10 +322,12 @@ function render() {
     const eb = el("button", "edit-btn", "Edit"), db_ = el("button", "delete-btn", "Delete");
     const sb = el("button", "spot-row", "Spotlight");
     sb.addEventListener("click", () => openSpot([b]));
+    const gb = el("button", "greet-row", "Greet");
+    gb.addEventListener("click", () => greet(b));
     eb.addEventListener("click", () => openEdit(b));
     db_.addEventListener("click", () => remove(b));
     act.append(eb, db_);
-    row.append(tile, info, when, sb, act);
+    row.append(tile, info, when, sb, gb, act);
     box.appendChild(row);
   });
 
@@ -308,7 +338,9 @@ function render() {
     box.appendChild(e);
   }
   subtitle(all);
-  $("spot-btn").hidden = !all.some(b => b.days === 0);
+  $("filters").hidden = all.length <= 10;
+  todayCard(all);
+  nextCard(all);
 }
 
 function subtitle(all) {
@@ -317,6 +349,56 @@ function subtitle(all) {
   const sorted = [...all].sort((a, b) => a.days - b.days), today = sorted.filter(b => b.days === 0);
   if (today.length) s.textContent = `🎉 Happy birthday, ${today.map(b => b.name).join(" and ")}!`;
   else { const nx = sorted[0]; s.textContent = `🎂 Next: ${nx.name}, ${nx.days === 1 ? "tomorrow" : `in ${nx.days} days`}!`; }
+}
+
+/* ---------- quote, next card, greeting ---------- */
+const QUOTES = ["“Hope all your birthday wishes come true!”", "“It’s your special day, so get out there and celebrate!”", "“I hope your celebration gives you many happy memories!”", "“Happy birthday! Here’s to more life, love, and adventures to come!”", "“Wishing you a birthday that’s just as wonderful as you are!”"];
+let qi = Math.floor(Date.now() / 6e4) % QUOTES.length;
+const quoteEl = $("quote");
+quoteEl.textContent = QUOTES[qi];
+setInterval(() => {
+  qi = (qi + 1) % QUOTES.length;
+  quoteEl.style.opacity = 0;
+  setTimeout(() => { quoteEl.textContent = QUOTES[qi]; quoteEl.style.opacity = 1; }, 300);
+}, 60000);
+
+function nextCard(all) {
+  const c = $("next-card"), up = all.filter(b => b.days > 0);
+  if (!up.length) { c.hidden = true; return; }
+  const min = Math.min(...up.map(b => b.days)), group = up.filter(b => b.days === min), f = group[0];
+  const line = el("span", "nc-line");
+  line.append("Next birthday: ", el("strong", null, group.map(x => x.name).join(", ")), `, ${min === 1 ? "tomorrow" : `in ${min} days`} (${MONTHS[f.m - 1]} ${f.d})`);
+  c.replaceChildren(el("span", "nc-emoji", "🎂"), line);
+  c.hidden = false;
+  c.onclick = () => openSpot(group);
+}
+
+function todayCard(all) {
+  const c = $("today-card"), t = all.filter(b => b.days === 0);
+  if (!t.length) { c.hidden = true; return; }
+  const txt = el("div", "tc-text"), btns = el("div", "tc-btns");
+  txt.append(el("span", "tc-label", t.length > 1 ? "Today’s celebrants" : "Today’s celebrant"),
+    el("strong", "tc-name", t.map(b => b.name).join(" and ")),
+    el("span", "tc-sub", t.length > 1 ? "Happy birthday to all! 🎉" : `Turns ${t[0].turns} today! 🎉`));
+  const sp = el("button", "tc-spot", "🎂 Open spotlight");
+  sp.addEventListener("click", () => openSpot(t));
+  btns.appendChild(sp);
+  if (t.length === 1) { const g = el("button", "tc-greet", "Send greeting"); g.addEventListener("click", () => greet(t[0])); btns.appendChild(g); }
+  c.replaceChildren(txt, btns);
+  c.hidden = false;
+}
+
+function greeting(b) {
+  if (b.days === 0) return `Happy birthday, ${b.name}! 🎂🎉 Wishing you a day filled with love, laughter, and everything you wished for. Enjoy your special day!`;
+  if (b.days >= 335) return `Happy belated birthday, ${b.name}! 🎂 Hope you had a wonderful day, and here’s to a great year ahead!`;
+  return `Happy early birthday, ${b.name}! 🎂🎈 Can’t wait to celebrate with you. Wishing you a wonderful year ahead!`;
+}
+async function greet(b) {
+  const text = greeting(b);
+  try { if (navigator.share) { await navigator.share({ text }); return; } }
+  catch (e) { if (e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(text); toast("Greeting copied. Paste it in a message!"); }
+  catch (e) { toast("Couldn’t copy the greeting. Please try again."); }
 }
 
 /* ---------- spotlight ---------- */
@@ -358,11 +440,15 @@ function slide(i) {
   const name = el("h2", "tp-name", b.name); name.style.fontSize = `${s}vmin`;
   const age = el("div", "tp-age"); age.append(el("b", null, String(b.turns)), el("small", null, "years old"));
   t.append(el("div", "tp-script", "Happy Birthday!"), name, age, el("div", "tp-ribbon", "Wishing you a day as special as you are!"), el("span", "tp-tag", b.tag));
+  const acts = el("div", "tp-actions"), g = el("button", "tp-greet", "Send greeting");
+  g.addEventListener("click", () => greet(b));
+  acts.appendChild(g);
   if (spotList.length > 1) {
     const back = el("button", "tp-back", "← All celebrants");
     back.addEventListener("click", board);
-    t.appendChild(back);
+    acts.appendChild(back);
   }
+  t.appendChild(acts);
   replay(t);
 }
 function openSpot(list) {
@@ -374,7 +460,14 @@ function openSpot(list) {
 }
 function closeSpot() { $("spot").hidden = true; document.body.style.overflow = ""; }
 $("spot-close").addEventListener("click", closeSpot);
-$("spot-btn").addEventListener("click", () => openSpot(compute().filter(b => b.days === 0)));
+$("spot-btn").addEventListener("click", () => {
+  const all = compute(), today = all.filter(b => b.days === 0);
+  if (today.length) return openSpot(today);
+  const up = all.filter(b => b.days > 0);
+  if (!up.length) return toast("No birthdays listed yet.");
+  const min = Math.min(...up.map(b => b.days));
+  openSpot(up.filter(b => b.days === min));
+});
 addEventListener("keydown", e => { if (e.key === "Escape" && !$("spot").hidden) closeSpot(); });
 
 /* ---------- live data ---------- */
@@ -385,7 +478,6 @@ onSnapshot(col, snap => {
     firstLoad = false;
     const all = compute();
     openSpot(all.filter(b => b.days === 0));
-    notifyDue(all);
   }
 }, () => { $("birthday-list").replaceChildren(el("div", "empty", "Couldn't load the list. Please try again later.")); });
 
@@ -454,28 +546,6 @@ const paintTheme = () => { $("theme-btn").textContent = dark() ? "☀️" : "�
 $("theme-btn").addEventListener("click", () => { const t = dark() ? "light" : "dark"; root.dataset.theme = t; ls.set("theme", t); paintTheme(); });
 paintTheme();
 
-/* ---------- reminders (fires when the app is opened) ---------- */
-const bell = $("bell-btn");
-const paintBell = () => { bell.textContent = ("Notification" in window && Notification.permission === "granted") ? "🔔 Reminders: On" : "🔔 Reminders"; };
-bell.addEventListener("click", async () => {
-  if (!("Notification" in window)) return toast("This browser doesn't support notifications.");
-  if (Notification.permission === "denied") return toast("Notifications are blocked in your browser settings.");
-  await Notification.requestPermission(); paintBell();
-  if (Notification.permission === "granted") { ls.set("notified", ""); notifyDue(compute()); }
-});
-async function notifyDue(all) {
-  paintBell();
-  if (!("Notification" in window) || Notification.permission !== "granted") return;
-  const key = new Date().toDateString();
-  if (ls.get("notified") === key) return;
-  const due = all.filter(b => b.days <= 1).sort((a, b) => a.days - b.days);
-  if (!due.length) return;
-  ls.set("notified", key);
-  const body = due.map(b => `${b.name} (${b.days === 0 ? "today" : "tomorrow"})`).join(", ");
-  const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
-  if (reg) reg.showNotification("🎂 Birthday Alert", { body }); else new Notification("🎂 Birthday Alert", { body });
-}
-paintBell();
 </script>
 </body>
 </html>
