@@ -163,6 +163,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .c-Others{background:rgba(46,125,50,.15);color:var(--others)}
 .empty .big{font-size:3.5rem}
 .cloud-footer{backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.5)}
+#cal-btn{display:none}body.is-admin #cal-btn{display:inline-block}
 .dfield{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px}
 .md{display:inline-flex;gap:6px}.md[hidden]{display:none}
 .noyr{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;white-space:nowrap}
@@ -189,6 +190,15 @@ dialog .noyr{display:inline-flex;margin:0}
  .birthday-item{flex-wrap:wrap}.actions{width:100%}.add-form button{width:100%}
 }
 
+.row-btns{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+@media(max-width:768px){
+ .birthday-item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"tile info when" "btns btns btns";gap:10px 12px;align-items:center}
+ .birthday-item>.tile{grid-area:tile;width:48px;height:52px}
+ .birthday-item>.info{grid-area:info}
+ .birthday-item>.when{grid-area:when;align-self:start}
+ .birthday-item>.row-btns{grid-area:btns}
+ .row-btns .actions{width:auto}
+}
 </style>
 </head>
 <body>
@@ -334,7 +344,9 @@ function render() {
     eb.addEventListener("click", () => openEdit(b));
     db_.addEventListener("click", () => remove(b));
     act.append(eb, db_);
-    row.append(tile, info, when, sb, gb, act);
+    const btns = el("div", "row-btns");
+    btns.append(sb, gb, act);
+    row.append(tile, info, when, btns);
     box.appendChild(row);
   });
 
@@ -468,6 +480,7 @@ function downloadIcs(list, name) {
   toast("Calendar file downloaded. Open it to add the reminders.");
 }
 $("cal-btn").addEventListener("click", () => {
+  if (!document.body.classList.contains("is-admin")) return;
   const all = compute();
   if (!all.length) return toast("No birthdays listed yet.");
   downloadIcs(all, "birthdays");
@@ -514,9 +527,12 @@ function slide(i) {
   t.append(el("div", "tp-script", "Happy Birthday!"), name, age, el("div", "tp-ribbon", "Wishing you a day as special as you are!"), el("span", "tp-tag", b.tag));
   const acts = el("div", "tp-actions"), g = el("button", "tp-greet", "Send greeting");
   g.addEventListener("click", () => greet(b));
-  const cb = el("button", "tp-greet", "📅 Add to calendar");
-  cb.addEventListener("click", () => downloadIcs([b], `${b.name}-birthday`));
-  acts.append(g, cb);
+  acts.appendChild(g);
+  if (document.body.classList.contains("is-admin")) {
+    const cb = el("button", "tp-greet", "📅 Add to calendar");
+    cb.addEventListener("click", () => downloadIcs([b], `${b.name}-birthday`));
+    acts.appendChild(cb);
+  }
   if (spotList.length > 1) {
     const back = el("button", "tp-back", "← All celebrants");
     back.addEventListener("click", board);
