@@ -1,97 +1,49 @@
 # 🎂 Birthday Tracker & Greeting Page
 
-A vibrant, interactive, and real-time web application designed to track and celebrate birthdays for family and friends. This project features a clean "Sticky Note" aesthetic, dynamic animations, and cloud-themed backgrounds, all powered by a live database.
+A real-time birthday wall for family and friends. It tracks birthdays, counts down to the next one, and gives every
+celebrant a full-screen **tarpaulin spotlight** with its own design and effects.
 
-## 🚀 Live Demo
+**Live site:** https://jeromrequillo.github.io/Birthday/
 
-You can view the live project here: **https://jeromrequillo.github.io/Birthday/**
+## Features
 
----
+- **Live data** with Firebase Firestore. Everyone sees updates instantly.
+- **Spotlight tarpaulin:** 8 designs (Classic, Fiesta, Royal, Sweet, Neon, Tropical, Galaxy, Sunny), picked per celebrant, each with different effects. Use the 🎲 button for a new design.
+- **Today card** for the celebrant of the day, plus a small "next birthday" line.
+- **Optional birth year.** Choose "Year unknown" and no age is shown.
+- **Greeting button** that shares or copies a ready-made message.
+- **Calendar export (.ics)** with yearly repeating birthdays and reminders (admin).
+- **Admin login with Google.** Only the account allowed by the Firestore rules can add, edit or delete.
+- Dark mode, installable on phones (PWA), works offline for the page shell.
 
-## ✨ Features
-
-* **Real-Time Data:** Integrated with **Firebase Firestore** to ensure all birthday entries are updated instantly across all devices.
-* **Smart Monthly Filtering:** The app automatically detects the current month and displays only the relevant celebrants, keeping the interface clutter-free.
-* **Celebration Mode:** Features an automatic **Confetti Blast** (via Canvas-Confetti) whenever a birthday matches the current calendar date.
-* **Time-Aware Greetings:** The subtitle dynamically changes based on the user's local time (Morning, Afternoon, or Evening greetings).
-* **Admin Controls:** Includes a password-protected system (`Default: ****`) to Add, Edit, or Delete entries, preventing unauthorized changes.
-* **PWA Ready:** Includes service worker registration and manifest linking, allowing the site to be installed as a mobile app.
-* **Responsive UI:** Fully optimized for Desktop, Tablet, and Mobile views.
-
----
-
-## 🛠️ Technical Stack
-
-| Component | Technology Used |
-| --- | --- |
-| **Frontend** | HTML5, CSS3, JavaScript (ES6+) |
-| **Database** | Firebase Firestore (NoSQL) |
-| **Animations** | CSS Keyframes & Canvas-Confetti API |
-| **Fonts** | Google Fonts (Fredoka One, Quicksand) |
-| **Deployment** | GitHub Pages |
-
----
-
-## 🔑 Admin Credentials
-
-To manage the list, the system will prompt for an admin password when trying to add, edit, or delete a name.
-
-* **Default Password:** `***`
-* **How to change:** Locate the `addBirthday`, `editBirthday`, or `deleteBirthday` functions in the `<script>` tag and update the `pass === "***"` condition.
-
----
-
-## 📂 Project Structure
-
-```text
-├── index.html          # Main application file (Structure, Logic, and Styles)
-├── manifest.json       # Configuration for Progressive Web App (PWA)
-├── sw.js               # Service Worker for offline capabilities
-└── README.md           # Project documentation
+## Project structure
 
 ```
-
----
-
-## ⚙️ Setup & Installation
-
-1. **Clone the Repository:**
-```bash
-git clone https://github.com/JeromRequillo/Birthday.git
-
+index.html            page markup
+404.html              friendly "not found" page
+manifest.json         install-to-home-screen settings
+sw.js                 service worker (network-first, so updates show up right away)
+css/                  base.css, components.css, tarpaulin.css
+js/                   app.js (entry), firebase.js, data.js, utils.js, datefields.js,
+                      greeting.js, calendar.js, tarpaulin.js, boot.js
+assets/               favicon, app icons, social preview image
+docs/                 SETUP.md and screenshots
 ```
 
+## Run locally
 
-2. **Firebase Configuration:**
-The project is currently linked to a Firebase project. To use your own database:
-* Create a project at [Firebase Console](https://console.firebase.google.com/).
-* Enable **Firestore Database**.
-* Copy your configuration object and replace the `firebaseConfig` constant in `index.html`.
+The scripts are ES modules, so open the site through a local server instead of double-clicking the file:
 
+```
+python -m http.server 8000
+```
 
-3. **Deployment:**
-* Push the code to your GitHub repository.
-* Go to **Settings > Pages**.
-* Select the `main` branch and click **Save**.
+Then visit http://localhost:8000.
 
+## Set up your own copy
 
+See [docs/SETUP.md](docs/SETUP.md) for the Firebase, security rules and GitHub Pages steps.
 
----
+## License
 
-## 📜 License
-
-This project is open-source. Feel free to fork, modify, and use it for your own personal birthday tracking needs.
-
----
-
-## 👤 Developer
-
-**JEROM REQUILLO**
-
-* GitHub: [https://github.com/JeromRequillo)
-
----
-
-*“Where every special day is remembered and celebrated.”*
-
----
+MIT. See [LICENSE](LICENSE).

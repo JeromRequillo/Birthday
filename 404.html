@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found | Birthday Tracker</title>
+<meta name="robots" content="noindex">
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;background:linear-gradient(to bottom,#4a90e2,#87ceeb);overflow:hidden}
+.balloon{font-size:4rem;display:inline-block;animation:bob 2.4s ease-in-out infinite}
+h1{font-size:clamp(4rem,18vw,8rem);margin:0;line-height:1;text-shadow:0 6px 18px rgba(0,0,0,.3)}
+p{font-size:1.15rem;margin:10px 0 26px}
+a{display:inline-block;background:#fff;color:#c2185b;font-weight:700;padding:12px 26px;border-radius:999px;text-decoration:none;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+a:hover{background:#ffe14d}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-18px) rotate(6deg)}}
+</style>
+</head>
+<body>
+<main>
+  <div class="balloon">🎈</div>
+  <h1>404</h1>
+  <p>This page floated away like a balloon.</p>
+  <a id="home" href="/">Back to Birthday Tracker</a>
+</main>
+<script>
+  // On GitHub Pages the site lives under /<repo>/, so build the home link from the current path.
+  if (location.hostname.endsWith("github.io")) document.getElementById("home").href = "/" + location.pathname.split("/")[1] + "/";
+</script>
+</body>
+</html>
