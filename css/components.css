@@ -1,0 +1,91 @@
+/* Components: birthday rows, today/next cards, tabs, buttons, animations, mobile */
+.spot-row{background:#7b2ff7;padding:6px 12px;font-size:.8rem}
+.spot-row:hover{background:#6420d4}
+.next-card{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 14px;margin-bottom:14px;border-radius:12px;background:var(--item);color:var(--text);border:1px solid var(--line);font-size:.9rem;transition:background .2s}
+.next-card:hover{background:var(--line)}
+.next-card[hidden],.filters[hidden],.today-card[hidden]{display:none}
+.nc-emoji{font-size:1.2rem}
+.today-card{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:24px 28px;margin-bottom:18px;border-radius:22px;background:linear-gradient(135deg,#ffd700,#ff8f00 55%,#ff3d7f);color:#4a0d2b;box-shadow:0 0 0 4px #fff,0 14px 34px rgba(255,143,0,.55);animation:pulse 1.6s ease-in-out infinite}
+.tc-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tc-label{font-weight:700;font-size:.95rem}
+.tc-name{font-family:'Fredoka One',cursive;font-weight:400;font-size:clamp(2rem,7vw,3.4rem);line-height:1.05;overflow-wrap:anywhere;text-shadow:0 2px 0 rgba(255,255,255,.5)}
+.tc-sub{font-weight:700;font-size:1.1rem}
+.tc-btns{display:flex;gap:10px;flex-wrap:wrap}
+.tc-spot{background:#5a0030;color:#fff;font-weight:700;padding:12px 22px;border-radius:999px;font-size:1rem}
+.tc-spot:hover{background:#3d0020}
+.tc-greet{background:#fff;color:#5a0030;font-weight:700;padding:12px 22px;border-radius:999px;font-size:1rem}
+.tc-greet:hover{background:#ffe14d}
+.birthday-item.today{padding:16px 18px;box-shadow:0 0 0 3px #ffd700,0 10px 24px rgba(255,179,0,.4)}
+.today .info strong{font-size:1.2rem}
+.today .tile{width:62px;height:66px}
+.greet-row{background:#1f8a4c;padding:6px 12px;font-size:.8rem}
+.greet-row:hover{background:#176d3c}
+h1{font-size:3rem;letter-spacing:.5px;text-shadow:0 2px 0 rgba(0,0,0,.12),0 6px 18px rgba(0,0,0,.28)}
+.subtitle{display:inline-block;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);padding:6px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.35)}
+.ghost{backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.35)}
+.main-card{border-radius:26px;border:1px solid rgba(255,255,255,.45);box-shadow:0 18px 40px rgba(10,30,70,.28);padding:28px}
+.main-card h2{font-family:'Fredoka One',cursive;font-size:1.8rem;font-weight:400}
+.sticky-note li{margin-bottom:8px}
+.sticky-note li:last-child{margin-bottom:0}
+.tabs{background:var(--item);padding:4px;border-radius:999px;display:inline-flex;gap:2px}
+.tab{background:transparent;border:none;color:var(--muted);border-radius:999px;padding:8px 16px;font-weight:600}
+.tab:hover{background:transparent;color:var(--text)}
+.tab[data-tab="all"]{display:none}
+body.is-admin .tab[data-tab="all"]{display:inline-block}
+.tab[aria-selected="true"]{background:var(--accent);color:#fff;box-shadow:0 4px 10px rgba(214,51,108,.35)}
+input,select{border-radius:10px;padding:10px 12px}
+input:focus,select:focus{border-color:var(--accent)}
+.birthday-item{border:2px solid transparent;border-radius:16px;padding:12px 14px;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease,background-color .3s ease}
+.birthday-item:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(10,30,70,.15)}
+.birthday-item.today{background:linear-gradient(135deg,var(--note),var(--item))}
+.tile{width:54px;height:58px;flex-shrink:0;border-radius:14px;background:linear-gradient(160deg,var(--bg1),#2f6fc4);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:0 4px 10px rgba(47,111,196,.35)}
+.tm{font-size:.72rem;font-weight:700;opacity:.9;margin-bottom:3px}
+.td{font-family:'Fredoka One',cursive;font-size:1.5rem}
+.today .tile{background:linear-gradient(160deg,#ffd700,#ffb300);color:#4a3b00;box-shadow:0 4px 10px rgba(255,179,0,.5)}
+.done .tile{filter:grayscale(.7)}
+.when{background:var(--line);padding:5px 12px;border-radius:999px;font-size:.85rem}
+.today .when{background:var(--accent);color:#fff}
+.chip{border:none;font-weight:600}
+.c-Family{background:rgba(214,51,108,.14);color:var(--accent)}
+.c-Friends{background:rgba(47,111,196,.15);color:var(--friends)}
+.c-Others{background:rgba(46,125,50,.15);color:var(--others)}
+.empty .big{font-size:3.5rem}
+.cloud-footer{backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.5)}
+#cal-btn{display:none}
+body.is-admin #cal-btn{display:inline-block}
+.dfield{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px}
+.md{display:inline-flex;gap:6px}
+.md[hidden]{display:none}
+.noyr{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;white-space:nowrap}
+.noyr input{width:auto}
+dialog .dfield{display:flex}
+dialog .md{display:flex;width:100%}
+dialog .md select{flex:1}
+dialog .noyr{display:inline-flex;margin:0}
+@keyframes glow{0%,100%{box-shadow:0 0 0 3px #ffd700,0 0 0 0 rgba(255,215,0,0)}50%{box-shadow:0 0 0 3px #ffd700,0 0 28px 10px rgba(255,215,0,.8)}}
+@keyframes cardGlow{0%,100%{box-shadow:0 0 0 4px #fff,0 14px 34px rgba(255,143,0,.55)}50%{box-shadow:0 0 0 4px #fff,0 0 46px 16px rgba(255,215,0,.9)}}
+@keyframes shine{0%{left:-60%}60%,100%{left:130%}}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.birthday-item.today{animation:pulse 1.2s ease-in-out infinite,glow 1.6s ease-in-out infinite}
+.today .tile{animation:hop 1s ease-in-out infinite}
+.today-card{position:relative;overflow:hidden;animation:pulse 1.6s ease-in-out infinite,cardGlow 2s ease-in-out infinite}
+.today-card>*{position:relative}
+.today-card::before{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:shine 2.6s ease-in-out infinite}
+@media(max-width:768px){
+ h1{font-size:2.1rem}.tabs{display:flex;overflow-x:auto}.tab{padding:8px 12px;font-size:.85rem;white-space:nowrap}
+ .container{flex-direction:column;align-items:center;gap:20px;padding:12px}
+ .sticky-note{width:92%;max-width:420px;transform:none}.main-card{width:100%;padding:18px}
+ .author-tag{position:static;display:block;transform:none;animation:none;margin-bottom:10px}
+ .tools{position:static;justify-content:center;margin-bottom:6px}
+ h1{font-size:1.9rem;margin-top:10px}
+ .birthday-item{flex-wrap:wrap}.actions{width:100%}.add-form button{width:100%}
+}
+.row-btns{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+@media(max-width:768px){
+ .birthday-item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"tile info when" "btns btns btns";gap:10px 12px;align-items:center}
+ .birthday-item>.tile{grid-area:tile;width:48px;height:52px}
+ .birthday-item>.info{grid-area:info}
+ .birthday-item>.when{grid-area:when;align-self:start}
+ .birthday-item>.row-btns{grid-area:btns}
+ .row-btns .actions{width:auto}
+}
