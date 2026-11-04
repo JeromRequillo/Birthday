@@ -82,7 +82,10 @@ function slide(i, idx) {
   const t = $("tarp"), len = b.name.length, s = len <= 8 ? 15 : len <= 12 ? 11 : len <= 18 ? 8 : 6;
   t.replaceChildren(...grommets());
   const name = el("h2", "tp-name", b.name); name.style.fontSize = `${s}vmin`;
-  const age = el("div", "tp-age"); if (b.noY) age.append(el("b", null, "🎂")); else age.append(el("b", null, String(b.turns)), el("small", null, "years old"));
+  const age = el("div", "tp-age"); if (b.noY) age.append(el("b", null, "🎂"));
+  else if (b.days === 0) age.append(el("b", null, String(b.turns)), el("small", null, "years old"));
+  else if (b.days >= 335) age.append(el("b", null, String(b.age)), el("small", null, "years old"));
+  else age.append(el("small", null, "turning"), el("b", null, String(b.turns)));
   t.append(el("div", "tp-script", "Happy Birthday!"), name, age, el("div", "tp-ribbon", "Wishing you a day as special as you are!"), el("span", "tp-tag", b.tag));
   const acts = el("div", "tp-actions"), g = el("button", "tp-greet", "Send greeting");
   g.addEventListener("click", () => greet(b));
