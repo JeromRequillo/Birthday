@@ -170,6 +170,28 @@ input:focus,select:focus{border-color:var(--accent)}
 .noyr input{width:auto}
 dialog .dfield{display:flex}dialog .md{display:flex;width:100%}dialog .md select{flex:1}
 dialog .noyr{display:inline-flex;margin:0}
+/* tarpaulin themes */
+#spot{background:var(--ovbg,#1f49b3);padding-top:64px}
+#spot::before{background:repeating-conic-gradient(var(--r1,#2a5bd7) 0 6deg,var(--r2,#1c3fa0) 6deg 12deg)}
+#spot::after{background:radial-gradient(circle at 50% 40%,var(--glow,rgba(255,255,255,.35)),transparent 55%)}
+.tarp{background:var(--tb,linear-gradient(160deg,#ff3d7f,#9b2ff0 55%,#3a63e0));border-color:var(--tbd,#fff);box-shadow:0 0 0 6px var(--ring,#ffd700),0 30px 70px rgba(0,0,0,.55);color:var(--tt,#fff)}
+.tarp::before{content:var(--decor,"");position:absolute;top:-44px;left:0;right:0;text-align:center;font-size:1.9rem;letter-spacing:.4em;pointer-events:none}
+.tp-script{color:var(--sc,#ffe14d);text-shadow:0 4px 0 var(--ss,#b3002f),0 10px 22px rgba(0,0,0,.4)}
+.tp-name{color:var(--nc,#fff);text-shadow:0 6px 0 var(--ns,#1b1464),0 14px 28px rgba(0,0,0,.45)}
+.tp-age{background:var(--ab,radial-gradient(circle at 35% 30%,#fff3a0,#ffc400 60%,#ff9100));color:var(--ac,#5a0030)}
+.tp-age::before{background:repeating-conic-gradient(var(--ray,#ffd700) 0 9deg,transparent 9deg 18deg)}
+.tp-ribbon{background:var(--rb,#ffd700);color:var(--rc,#5a0030)}
+.faller{position:fixed;top:-70px;left:var(--x);font-size:var(--s);z-index:1;pointer-events:none;animation:fall var(--d) linear infinite;animation-delay:var(--w)}
+@keyframes fall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(125vh) rotate(360deg)}}
+#spot[data-theme=fiesta]{--ovbg:#c62828;--r1:#e53935;--r2:#b71c1c;--glow:rgba(255,235,59,.45);--tb:linear-gradient(160deg,#ffeb3b,#ffa000 60%,#ff6f00);--tbd:#fff;--ring:#2e7d32;--tt:#4a0d0d;--sc:#d50000;--ss:#fff;--nc:#7f0000;--ns:#ffe082;--ab:radial-gradient(circle at 35% 30%,#ff8a80,#d50000);--ac:#fff;--ray:#2e7d32;--rb:#2e7d32;--rc:#fff;--decor:"🎊 🎉 🎊 🎉 🎊"}
+#spot[data-theme=royal]{--ovbg:#120a2a;--r1:#1b1040;--r2:#0d0720;--glow:rgba(255,215,0,.35);--tb:linear-gradient(160deg,#2a1458,#10082b);--tbd:#ffd700;--ring:#fff;--tt:#f6e7b4;--sc:#ffd700;--ss:#5a3d00;--nc:#fff3c4;--ns:#7a5a00;--ab:radial-gradient(circle at 35% 30%,#fff6c9,#d4a017 65%,#8a6a00);--ac:#3b2a00;--ray:#ffd700;--rb:linear-gradient(90deg,#b8860b,#ffd700,#b8860b);--rc:#2b1b00;--decor:"👑"}
+#spot[data-theme=sweet]{--ovbg:#ffd6e8;--r1:#ffc2dd;--r2:#ffe0ee;--glow:rgba(255,255,255,.7);--tb:linear-gradient(160deg,#fff,#ffe0f0);--tbd:#ff80b5;--ring:#ffb3d1;--tt:#8a1f5c;--sc:#ff4f9a;--ss:#fff;--nc:#c2185b;--ns:#ffd1e6;--ab:radial-gradient(circle at 35% 30%,#fff,#ff9ec8 70%);--ac:#8a1f5c;--ray:#ffb3d1;--rb:#ff80b5;--rc:#fff;--decor:"🌸 💖 🌸 💖 🌸"}
+#spot[data-theme=neon]{--ovbg:#05060f;--r1:#0b0d24;--r2:#05060f;--glow:rgba(0,229,255,.25);--tb:linear-gradient(160deg,#0f1030,#050612);--tbd:#00e5ff;--ring:#ff2bd6;--tt:#e8fbff;--sc:#00e5ff;--ss:#ff2bd6;--nc:#fff;--ns:#ff2bd6;--ab:radial-gradient(circle at 35% 30%,#2b0f3a,#0a0a1f);--ac:#00e5ff;--ray:#ff2bd6;--rb:linear-gradient(90deg,#ff2bd6,#00e5ff);--rc:#050612;--decor:"⚡ 🎧 ⚡"}
+#spot[data-theme=neon]::before{background:repeating-conic-gradient(rgba(0,229,255,.16) 0 4deg,transparent 4deg 20deg)}
+#spot[data-theme=neon] .tarp{box-shadow:0 0 0 6px var(--ring),0 0 40px 10px rgba(0,229,255,.55),0 0 80px 20px rgba(255,43,214,.35)}
+#spot[data-theme=tropical]{--ovbg:#00796b;--r1:#00897b;--r2:#00695c;--glow:rgba(255,241,118,.5);--tb:linear-gradient(160deg,#fff176,#aeea00 55%,#00c853);--tbd:#fff;--ring:#ff6d00;--tt:#004d40;--sc:#ff6d00;--ss:#fff;--nc:#004d40;--ns:#fff59d;--ab:radial-gradient(circle at 35% 30%,#ffe082,#ff6d00);--ac:#fff;--ray:#ff6d00;--rb:#ff6d00;--rc:#fff;--decor:"🌴 🥥 🌺 🥥 🌴"}
+#spot[data-theme=galaxy]{--ovbg:#0b0f2e;--r1:#141a4d;--r2:#0b0f2e;--glow:rgba(160,120,255,.4);--tb:linear-gradient(160deg,rgba(90,60,200,.9),rgba(30,20,90,.95));--tbd:#b39ddb;--ring:#7c4dff;--tt:#efe9ff;--sc:#ffd54f;--ss:#4527a0;--nc:#fff;--ns:#311b92;--ab:radial-gradient(circle at 35% 30%,#fff9c4,#ffb300 70%);--ac:#311b92;--ray:#b39ddb;--rb:#7c4dff;--rc:#fff;--decor:"🌙 ✨ 🪐 ✨ 🌙"}
+#spot[data-theme=sunny]{--ovbg:#ffb300;--r1:#ffca28;--r2:#ffa000;--glow:rgba(255,255,255,.6);--tb:linear-gradient(160deg,#fffde7,#ffe082);--tbd:#fff;--ring:#ff6f00;--tt:#5d3a00;--sc:#e65100;--ss:#fff;--nc:#bf360c;--ns:#ffe0b2;--ab:radial-gradient(circle at 35% 30%,#fff,#ff9800 70%);--ac:#fff;--ray:#ff9800;--rb:#ff7043;--rc:#fff;--decor:"☀️ 🌻 ☀️ 🌻 ☀️"}
 /* celebrant animations */
 @keyframes glow{0%,100%{box-shadow:0 0 0 3px #ffd700,0 0 0 0 rgba(255,215,0,0)}50%{box-shadow:0 0 0 3px #ffd700,0 0 28px 10px rgba(255,215,0,.8)}}
 @keyframes cardGlow{0%,100%{box-shadow:0 0 0 4px #fff,0 14px 34px rgba(255,143,0,.55)}50%{box-shadow:0 0 0 4px #fff,0 0 46px 16px rgba(255,215,0,.9)}}
@@ -490,37 +512,71 @@ $("cal-btn").addEventListener("click", () => {
 let spotList = [];
 const grommets = () => ["g1", "g2", "g3", "g4"].map(c => el("i", "gr " + c));
 const replay = t => { t.style.animation = "none"; void t.offsetWidth; t.style.animation = ""; };
-function party() {
-  const end = Date.now() + 3000;
-  (function f() {
+const THEMES = [
+  { id: "classic", fx: [{ k: "up", e: ["🎈", "🎈", "🎉", "🎊"] }, { k: "cannons" }] },
+  { id: "fiesta", fx: [{ k: "up", e: ["🎊", "🎉", "🎈"] }, { k: "cannons" }] },
+  { id: "royal", fx: [{ k: "down", e: ["✨", "⭐", "👑"] }, { k: "gold" }] },
+  { id: "sweet", fx: [{ k: "up", e: ["💖", "🌸", "💗", "🎀"] }] },
+  { id: "neon", fx: [{ k: "fireworks" }] },
+  { id: "tropical", fx: [{ k: "down", e: ["🌺", "🌴", "🥥"] }, { k: "cannons" }] },
+  { id: "galaxy", fx: [{ k: "down", e: ["✨", "⭐", "🌟"] }, { k: "stars" }] },
+  { id: "sunny", fx: [{ k: "up", e: ["🌻", "☀️", "🎈"] }, { k: "cannons" }] }
+];
+let fxTimers = [], curTheme = 0;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const hash = s => { let n = 0; for (const c of s) n = (n * 31 + c.codePointAt(0)) | 0; return Math.abs(n); };
+function every(ms, fn, dur) {
+  fn();
+  const t0 = Date.now(), id = setInterval(() => { if (dur && Date.now() - t0 > dur) return clearInterval(id); fn(); }, ms);
+  fxTimers.push(id);
+}
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const FX = {
+  cannons: () => every(60, () => {
     confetti({ particleCount: 4, angle: 60, spread: 60, origin: { x: 0 }, zIndex: 2000 });
     confetti({ particleCount: 4, angle: 120, spread: 60, origin: { x: 1 }, zIndex: 2000 });
-    if (Date.now() < end) requestAnimationFrame(f);
-  })();
-}
-function balloons() {
+  }, 3000),
+  gold: () => every(120, () => confetti({ particleCount: 3, angle: 90, spread: 180, origin: { x: Math.random(), y: 0 }, colors: ["#ffd700", "#fff3c4", "#b8860b"], gravity: .5, ticks: 400, zIndex: 2000 }), 6000),
+  stars: () => every(150, () => confetti({ particleCount: 3, spread: 120, origin: { x: Math.random(), y: 0 }, shapes: ["star"], colors: ["#ffd54f", "#b39ddb", "#ffffff"], gravity: .4, scalar: 1.3, ticks: 400, zIndex: 2000 }), 6000),
+  fireworks: () => every(750, () => confetti({ particleCount: 70, startVelocity: 28, spread: 360, ticks: 70, gravity: .8, origin: { x: rnd(.15, .85), y: rnd(.1, .5) }, colors: pick([["#ff2bd6", "#00e5ff", "#ffffff"], ["#ffd700", "#ff5252", "#ffffff"], ["#69f0ae", "#40c4ff", "#ffffff"]]), zIndex: 2000 }))
+};
+function floaters(list, dir) {
   const s = $("spot");
-  if (s.querySelector(".balloon")) return;
   for (let i = 0; i < 16; i++) {
-    const b = el("span", "balloon", ["🎈", "🎈", "🎉", "🎊"][i % 4]);
-    b.style.cssText = `--x:${Math.random() * 95}%;--d:${9 + Math.random() * 8}s;--w:${-Math.random() * 14}s;--s:${28 + Math.random() * 34}px`;
+    const b = el("span", dir === "up" ? "balloon" : "faller", list[i % list.length]);
+    b.style.cssText = `--x:${rnd(0, 95)}%;--d:${rnd(9, 17)}s;--w:${-rnd(0, 14)}s;--s:${rnd(28, 62)}px`;
     s.prepend(b);
   }
 }
+function stopFx() {
+  fxTimers.forEach(clearInterval); fxTimers = [];
+  $("spot").querySelectorAll(".balloon,.faller").forEach(n => n.remove());
+  if (confetti.reset) confetti.reset();
+}
+function applyTheme(key, idx) {
+  curTheme = idx != null ? idx : hash(key) % THEMES.length;
+  const t = THEMES[curTheme];
+  $("spot").dataset.theme = t.id;
+  stopFx();
+  t.fx.forEach(f => (f.k === "up" || f.k === "down") ? floaters(f.e, f.k) : FX[f.k]());
+}
 function board() {
+  applyTheme(null, 0);
   const t = $("tarp"), grid = el("div", "tp-grid");
   t.replaceChildren(...grommets());
   spotList.forEach((b, i) => {
     const c = el("button", "tp-card");
     c.append(el("strong", null, b.name), el("span", null, b.noY ? b.tag : `Turns ${b.turns}`));
-    c.addEventListener("click", () => { slide(i); party(); });
+    c.addEventListener("click", () => slide(i));
     grid.appendChild(c);
   });
   t.append(el("div", "tp-script", "Happy Birthday!"), el("div", "tp-ribbon", "to all of today’s celebrants"), el("p", "tp-hint", "Click a name to see their birthday banner"), grid);
   replay(t);
 }
-function slide(i) {
-  const b = spotList[i], t = $("tarp"), len = b.name.length, s = len <= 8 ? 15 : len <= 12 ? 11 : len <= 18 ? 8 : 6;
+function slide(i, idx) {
+  const b = spotList[i];
+  applyTheme(`${b.id}-${new Date().getFullYear()}`, idx);
+  const t = $("tarp"), len = b.name.length, s = len <= 8 ? 15 : len <= 12 ? 11 : len <= 18 ? 8 : 6;
   t.replaceChildren(...grommets());
   const name = el("h2", "tp-name", b.name); name.style.fontSize = `${s}vmin`;
   const age = el("div", "tp-age"); if (b.noY) age.append(el("b", null, "🎂")); else age.append(el("b", null, String(b.turns)), el("small", null, "years old"));
@@ -528,6 +584,9 @@ function slide(i) {
   const acts = el("div", "tp-actions"), g = el("button", "tp-greet", "Send greeting");
   g.addEventListener("click", () => greet(b));
   acts.appendChild(g);
+  const sh = el("button", "tp-greet", "🎲 New design");
+  sh.addEventListener("click", () => slide(i, (curTheme + 1 + Math.floor(Math.random() * (THEMES.length - 1))) % THEMES.length));
+  acts.appendChild(sh);
   if (document.body.classList.contains("is-admin")) {
     const cb = el("button", "tp-greet", "📅 Add to calendar");
     cb.addEventListener("click", () => downloadIcs([b], `${b.name}-birthday`));
@@ -543,12 +602,12 @@ function slide(i) {
 }
 function openSpot(list) {
   if (!list.length) return;
-  spotList = list; balloons();
+  spotList = list;
   if (list.length > 1) board(); else slide(0);
   $("spot").hidden = false; document.body.style.overflow = "hidden";
-  $("spot-close").focus(); party();
+  $("spot-close").focus();
 }
-function closeSpot() { $("spot").hidden = true; document.body.style.overflow = ""; }
+function closeSpot() { $("spot").hidden = true; document.body.style.overflow = ""; stopFx(); }
 $("spot-close").addEventListener("click", closeSpot);
 $("spot-btn").addEventListener("click", () => {
   const all = compute(), today = all.filter(b => b.days === 0);
